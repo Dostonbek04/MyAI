@@ -1,0 +1,34 @@
+{% extends 'authenticated_base.html' %}
+
+{% block title %}Admin - Sharhlar{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2 class="text-center">Sharhlarni boshqarish</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Ism</th>
+                <th>Email</th>
+                <th>Fikr</th>
+                <th>Holat</th>
+                <th>Amallar</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for feedback in feedbacks %}
+            <tr>
+                <td>{{ feedback.name }}</td>
+                <td>{{ feedback.email }}</td>
+                <td>{{ feedback.message }}</td>
+                <td>{% if feedback.is_approved %}✅ Tasdiqlangan{% else %}⏳ Kutilmoqda{% endif %}</td>
+                <td>
+                    <a href="{% url 'approve_feedback' feedback.id %}" class="btn btn-success">Tasdiqlash</a>
+                    <a href="{% url 'delete_feedback' feedback.id %}" class="btn btn-danger">O‘chirish</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -1,0 +1,340 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="PresentlyAI - AI yordamida taqdimotlar yaratish platformasi">
+    <meta name="keywords" content="AI, taqdimot, prezentatsiya, avtomatik taqdimot yaratish">
+    <meta name="author" content="PresentlyAI">
+
+    <title>{% block title %}PresentlyAI{% endblock %}</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- FontAwesome (Iconlar uchun) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{% static 'images/favicon.png' %}">
+
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <style>
+        /* Tema o‘zgaruvchilari */
+        :root {
+            --primary-gradient: linear-gradient(135deg, #007bff, #0056b3);
+            --primary-gradient-hover: linear-gradient(135deg, #0056b3, #003f80);
+        }
+
+        [data-theme="light"] {
+            --background: #ffffff;
+            --text-color: #333333;
+            --card-bg: #ffffff;
+            --secondary-bg: #f8f9fa;
+            --border-color: #dee2e6;
+            --text-muted: #6c757d;
+            --hover-bg: rgba(0, 0, 0, 0.05);
+            --shadow-color: rgba(0, 0, 0, 0.15);
+            --button-text-color: white;
+            --alert-bg: rgba(0, 0, 0, 0.1);
+            --scrollbar-track: #f1f1f1;
+            --scrollbar-thumb: #888;
+            --scrollbar-thumb-hover: #555;
+            --navbar-toggler-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3E%3Cpath stroke='rgba(0, 123, 255, 1)' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+            --input-bg: #ffffff;
+            --input-border: #ced4da;
+            --nav-btn-bg: #ffffff;
+            --nav-btn-text: #212529;
+            --nav-btn-border: #212529;
+            --theme-toggle-bg: #ffffff;
+            --theme-toggle-text: #212529;
+            --profile-icon-bg: #ffffff;
+            --profile-icon-text: #212529;
+            --profile-icon-border: #dee2e6;
+            --footer-bg: #f8f9fa;
+            --footer-text: #212529;
+        }
+
+        [data-theme="dark"] {
+            --background: #1a1a1a;
+            --text-color: #e0e0e0;
+            --card-bg: #2c2c2c;
+            --secondary-bg: #333333;
+            --border-color: #444444;
+            --text-muted: #a0a0a0;
+            --hover-bg: rgba(255, 255, 255, 0.1);
+            --shadow-color: rgba(255, 255, 255, 0.1);
+            --button-text-color: white;
+            --alert-bg: rgba(255, 255, 255, 0.1);
+            --scrollbar-track: #444444;
+            --scrollbar-thumb: #888888;
+            --scrollbar-thumb-hover: #bbbbbb;
+            --navbar-toggler-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3E%3Cpath stroke='rgba(255, 255, 255, 0.8)' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+            --input-bg: #444444;
+            --input-border: #666666;
+            --nav-btn-bg: #212529;
+            --nav-btn-text: #ffffff;
+            --nav-btn-border: #ffffff;
+            --theme-toggle-bg: #212529;
+            --theme-toggle-text: #ffffff;
+            --profile-icon-bg: #212529;
+            --profile-icon-text: #ffffff;
+            --profile-icon-border: #212529;
+            --footer-bg: #333333;
+            --footer-text: #ffffff;
+        }
+
+        /* Umumiy uslublar */
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--background);
+            color: var(--text-color);
+        }
+
+        /* Orqaga va Bosh Sahifa tugmalari uslubi */
+        .nav-buttons-container {
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .nav-buttons-container .btn-nav {
+            background-color: var(--nav-btn-bg);
+            color: var(--nav-btn-text);
+            border: 2px solid var(--nav-btn-border);
+        }
+
+        .btn-nav:hover {
+            opacity: 0.9;
+        }
+
+        /* Tungi/kunduzgi rejim tugmasi uslubi */
+        .theme-toggle-btn {
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            border: none;
+            background-color: var(--theme-toggle-bg);
+            color: var(--theme-toggle-text);
+        }
+
+        .theme-toggle-btn:hover {
+            transform: scale(1.1);
+        }
+
+        /* Profil ikonkasi */
+        .profile-icon {
+            z-index: 1000;
+            top: 50px;
+        }
+
+        .profile-icon .btn-profile {
+            background-color: var(--profile-icon-bg);
+            color: var(--profile-icon-text);
+            border-color: var(--profile-icon-border);
+        }
+
+        .btn-profile:hover {
+            opacity: 0.9;
+        }
+
+        /* Footer uslublari */
+        footer {
+            transition: all 0.3s ease;
+            background-color: var(--footer-bg);
+            color: var(--footer-text);
+        }
+
+        footer a {
+            color: var(--footer-text);
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Yuqoridan tushuvchi modal uchun uslublar */
+        .top-message-modal .modal-dialog {
+            position: fixed;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 600px;
+            margin: 0;
+            animation: slideDown 0.5s ease-out forwards;
+        }
+
+        .top-message-modal .modal-content {
+            border-radius: 0 0 8px 8px;
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 8px var(--shadow-color);
+        }
+
+        .top-message-modal .modal-body {
+            padding: 1rem;
+        }
+
+        .top-message-modal .alert {
+            margin-bottom: 0.5rem;
+        }
+
+        /* Animatsiya */
+        @keyframes slideDown {
+            from {
+                transform: translateX(-50%) translateY(-100%);
+            }
+            to {
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateX(-50%) translateY(0);
+            }
+            to {
+                transform: translateX(-50%) translateY(-100%);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- System Messages Modal -->
+    <div class="modal top-message-modal" id="systemMessagesModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} mb-2" role="alert">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigatsiya tugmalari (Orqaga va Bosh Sahifa) -->
+    <div class="nav-buttons-container position-fixed start-0 p-3">
+        <!-- Orqaga tugmasi faqat create_presentation va select_template sahifalarida ko‘rinadi -->
+        {% if request.path == '/presentations/create/' or request.path == '/presentations/select-template/' %}
+        <a href="{% if request.path == '/presentations/select-template/' %}{% url 'presentations:generate_titles' %}{% else %}{% url 'users:profile' %}{% endif %}" class="btn btn-sm btn-nav">
+            <i class="bi bi-arrow-left"></i> Orqaga
+        </a>
+        {% endif %}
+        <!-- Bosh Sahifa tugmasi faqat profil sahifasida ko‘rinmaydi -->
+        {% if request.path != '/users/profile/' %}
+        <a href="{% url 'users:profile' %}" class="btn btn-sm btn-nav">
+            <i class="fa-solid fa-house"></i> Bosh Sahifa
+        </a>
+        {% endif %}
+    </div>
+
+    <!-- Main Content -->
+    <div class="container-fluid p-0">
+        {% block content %}{% endblock %}
+    </div>
+
+    <!-- Custom JS -->
+    <script src="{% static 'js/scripts.js' %}"></script>
+
+    <!-- Dark Mode Switch va Modalni boshqarish -->
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Dark Mode Switch
+        const toggleTheme = document.createElement("button");
+        toggleTheme.classList.add("btn", "btn-sm", "btn-light", "position-fixed", "bottom-0", "end-0", "m-3", "theme-toggle-btn");
+
+        const currentTheme = getCookie("theme") || "light";
+        document.documentElement.setAttribute("data-theme", currentTheme);
+        toggleTheme.innerHTML = currentTheme === "dark" ? "☀️" : "🌙";
+        if (currentTheme === "dark") {
+            document.body.classList.add("bg-dark", "text-white");
+        }
+
+        toggleTheme.addEventListener("click", function() {
+            const newTheme = document.documentElement.getAttribute("data-theme") === "light" ? "dark" : "light";
+            document.documentElement.setAttribute("data-theme", newTheme);
+            document.body.classList.toggle("bg-dark");
+            document.body.classList.toggle("text-white");
+
+            toggleTheme.innerHTML = newTheme === "dark" ? "☀️" : "🌙";
+            setCookie("theme", newTheme, 30);
+        });
+
+        document.body.appendChild(toggleTheme);
+
+        function setCookie(name, value, days) {
+            let expires = "";
+            if (days) {
+                const date = new Date();
+                date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                expires = "; expires=" + date.toUTCString();
+            }
+            document.cookie = name + "=" + value + "; path=/" + expires;
+        }
+
+        function getCookie(name) {
+            const cookies = document.cookie.split("; ");
+            for (let i = 0; i < cookies.length; i++) {
+                const [cookieName, cookieValue] = cookies[i].split("=");
+                if (cookieName === name) {
+                    return cookieValue;
+                }
+            }
+            return "";
+        }
+
+        // System Messages Modal
+        {% if messages %}
+            const systemMessagesModal = new bootstrap.Modal(document.getElementById('systemMessagesModal'), {
+                backdrop: false
+            });
+            systemMessagesModal.show();
+
+            // Xabar uzunligini hisoblash va vaqtni aniqlash
+            let totalWords = 0;
+            const messages = document.querySelectorAll('#systemMessagesModal .alert');
+            messages.forEach(message => {
+                const words = message.textContent.trim().split(/\s+/).length;
+                totalWords += words;
+            });
+
+            // Har 10 so‘z uchun 15 soniya (minimum 5 soniya)
+            const duration = Math.max(5, Math.ceil(totalWords / 10) * 15) * 1000;
+
+            setTimeout(() => {
+                const modalDialog = document.querySelector('#systemMessagesModal .modal-dialog');
+                modalDialog.style.animation = 'slideUp 0.5s ease-out forwards';
+                setTimeout(() => {
+                    systemMessagesModal.hide();
+                }, 500);
+            }, duration);
+        {% endif %}
+    });
+    </script>
+</body>
+</html>

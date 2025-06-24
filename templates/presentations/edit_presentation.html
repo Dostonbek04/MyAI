@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tahrirlash - {{ presentation_title }}</title>
+    <!-- Bootstrap CSS va FontAwesome uchun CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .slide-thumbnail {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .slide-thumbnail:hover {
+            background-color: #e2e8f0;
+        }
+        .active-slide {
+            border: 2px solid #3b82f6;
+        }
+        [contenteditable]:focus {
+            outline: 2px solid #3b82f6;
+            border-radius: 4px;
+        }
+        /* Navbarni moslashtirish */
+        .navbar-brand {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        .navbar-nav .nav-link {
+            font-size: 1.1rem;
+            margin-left: 1rem;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex flex-col min-h-screen">
+    <!-- Authenticated Base Layout -->
+    {% include 'authenticated_base.html' %}
+
+    <!-- Kontent -->
+    <div class="container mx-auto p-4 flex-grow">
+        <h1 class="text-3xl font-bold mb-4 text-center">{{ presentation_title }}</h1>
+        <div class="flex space-x-4">
+            <!-- Chap panel: Slaydlar ro‘yxati -->
+            <div class="w-1/4 bg-white rounded-lg shadow-lg p-4">
+                <h2 class="text-lg font-semibold mb-2">Slaydlar</h2>
+                <div id="slideList" class="space-y-2"></div>
+                <button id="addSlideBtn" class="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 w-full">Yangi Slayd</button>
+            </div>
+            <!-- Markaziy panel: Asosiy slayd -->
+            <div class="w-3/4 bg-white rounded-lg shadow-lg p-6">
+                <div id="mainSlide" class="border p-4 rounded-lg min-h-[400px]">
+                    <h2 id="slideTitle" contenteditable="true" class="text-2xl font-bold mb-4">Slayd Sarlavhasi</h2>
+                    <p id="slideContent" contenteditable="true" class="text-lg">Slayd matni shu yerda bo‘ladi. O‘zgartirish uchun bosing.</p>
+                </div>
+                <div class="mt-4 flex justify-between">
+                    <button id="undoBtn" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">Orqaga (Ctrl+Z)</button>
+                    <button id="saveBtn" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Saqlash</button>
+                    <button id="redoBtn" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">Oldinga (Ctrl+Y)</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Backend’dan kelgan slaydlarni yuklash
+        const initialSlides = {{ slides_data | safe }};
+        let slides = initialSlides.length > 0 ? initialSlides : [
+            { id: 1, title: "Kirish", content: "Bu birinchi slayd." }
+        ];
+        let currentSlideId = slides[0]?.id || 1;
+        let history = [];
+        let historyIndex = -1;
+
+        // Slaydlarni ro‘yxatga chiqarish
+        function renderSlides() {
+            const slideList = document.getElementById('slideList');
+            slideList.innerHTML = '';
+            slides.forEach(slide => {
+                const div = document.createElement('div');
+                div.className = `p-2 rounded slide-thumbnail ${slide.id === currentSlideId ? 'active-slide' : ''}`;
+                div.innerHTML = `
+                    <h3 class="font-semibold">${slide.title}</h3>
+                    <p class="text-sm text-gray-600">${slide.content.slice(0, 20)}...</p>
+                `;
+                div.onclick = () => selectSlide(slide.id);
+                slideList.appendChild(div);
+            });
+            renderMainSlide();
+        }
+
+        // Asosiy slaydni ko‘rsatish
+        function renderMainSlide() {
+            const slide = slides.find(s => s.id === currentSlideId);
+            if (!slide) return;
+            document.getElementById('slideTitle').textContent = slide.title;
+            document.getElementById('slideContent').textContent = slide.content;
+        }
+
+        // Slayd tanlash
+        function selectSlide(id) {
+            currentSlideId = id;
+            renderSlides();
+        }
+
+        // O‘zgarishlarni saqlash (tarix uchun)
+        function saveState() {
+            const slide = slides.find(s => s.id === currentSlideId);
+            if (!slide) return;
+            history = history.slice(0, historyIndex + 1); // Eski tarixni tozalash
+            history.push(JSON.parse(JSON.stringify(slides)));
+            historyIndex++;
+        }
+
+        // Undo (Orqaga)
+        function undo() {
+            if (historyIndex <= 0) return;
+            historyIndex--;
+            slides = JSON.parse(JSON.stringify(history[historyIndex]));
+            renderSlides();
+        }
+
+        // Redo (Oldinga)
+        function redo() {
+            if (historyIndex >= history.length - 1) return;
+            historyIndex++;
+            slides = JSON.parse(JSON.stringify(history[historyIndex]));
+            renderSlides();
+        }
+
+        // Yangi slayd qo‘shish
+        document.getElementById('addSlideBtn').onclick = () => {
+            const newId = slides.length ? Math.max(...slides.map(s => s.id)) + 1 : 1;
+            slides.push({ id: newId, title: `Slayd ${newId}`, content: "Yangi slayd matni." });
+            saveState();
+            renderSlides();
+        };
+
+        // Backend’ga saqlash
+        async function saveSlides() {
+            try {
+                const response = await fetch(`/presentations/save/{{ presentation_id }}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCsrfToken(),
+                    },
+                    body: JSON.stringify({ slides }),
+                });
+                const data = await response.json();
+                if (data.status === 'success') {
+                    alert('Slaydlar saqlandi!');
+                } else {
+                    alert('Saqlashda xato: ' + data.message);
+                }
+            } catch (err) {
+                alert('Saqlashda xato yuz berdi: ' + err.message);
+            }
+        }
+
+        // CSRF tokenini olish
+        function getCsrfToken() {
+            const name = 'csrftoken';
+            const cookies = document.cookie.split(';');
+            for (let cookie of cookies) {
+                cookie = cookie.trim();
+                if (cookie.startsWith(name + '=')) {
+                    return cookie.substring(name.length + 1);
+                }
+            }
+            console.error('CSRF token topilmadi!');
+            return '';
+        }
+
+        // Tahrirlash hodisalari
+        document.getElementById('slideTitle').addEventListener('input', (e) => {
+            const slide = slides.find(s => s.id === currentSlideId);
+            slide.title = e.target.textContent;
+            saveState();
+            renderSlides();
+        });
+
+        document.getElementById('slideContent').addEventListener('input', (e) => {
+            const slide = slides.find(s => s.id === currentSlideId);
+            slide.content = e.target.textContent;
+            saveState();
+            renderSlides();
+        });
+
+        // Undo va Redo tugmalari
+        document.getElementById('undoBtn').onclick = undo;
+        document.getElementById('redoBtn').onclick = redo;
+
+        // Saqlash tugmasi
+        document.getElementById('saveBtn').onclick = saveSlides;
+
+        // Ctrl+Z va Ctrl+Y
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.key === 'z') {
+                e.preventDefault();
+                undo();
+            }
+            if (e.ctrlKey && e.key === 'y') {
+                e.preventDefault();
+                redo();
+            }
+        });
+
+        // Dastlabki render
+        saveState();
+        renderSlides();
+    </script>
+</body>
+</html>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ presentation.title }}</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .slide { padding: 20px; border: 1px solid #ddd; margin-bottom: 20px; }
+        img { max-width: 100%; height: auto; }
+        p[contenteditable="true"] { border: 1px dashed gray; padding: 5px; }
+        button { margin-top: 10px; padding: 10px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        <h1>{{ presentation.title }}</h1>
+        <p><strong>Yaratilgan sana:</strong> {{ presentation.created_at|date:"Y-m-d H:i" }}</p>
+        <hr>
+        <h4>📑 Slaydlardagi matnlar:</h4>
+        <form id="editForm">
+            {% for slide_text in slides_data %}
+                <div class="slide">
+                    <p contenteditable="true">{{ slide_text }}</p>
+                </div>
+            {% empty %}
+                <p>📌 Ushbu taqdimotda matn topilmadi.</p>
+            {% endfor %}
+            <button type="submit">Saqlash</button>
+        </form>
+    </div>
+    <script>
+        document.getElementById("editForm").addEventListener("submit", function(e) {
+            e.preventDefault();
+            let slides = document.querySelectorAll(".slide p");
+            let updatedData = [];
+            slides.forEach(slide => {
+                updatedData.push(slide.innerText);
+            });
+            fetch("/api/update_presentation/{{ presentation.id }}/", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ slides: updatedData })
+            }).then(response => response.json())
+              .then(data => alert(data.message));
+        });
+    </script>
+</body>
+</html>

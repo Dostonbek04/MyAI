@@ -1,0 +1,328 @@
+{% extends 'authenticated_base.html' %}
+
+{% block title %}To‘lov Tarixi{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <!-- ✅ Chap menyu - Profil va balans -->
+        <div class="col-md-3">
+            <div class="card shadow-lg border-0 rounded-lg p-3 text-center">
+                <img src="{% if user.profile.image.url %}{{ user.profile.image.url }}{% else %}{{ '/media/default/default_profile.png' }}{% endif %}" alt="Profil rasmi" class="rounded-circle mb-3 profile-image" width="100">
+                <h4 class="fw-bold">{{ user.username }}</h4>
+                <p class="text-muted">{{ user.email }}</p>
+                <a href="{% url 'users:profile' %}" class="btn btn-outline-primary btn-sm w-100 custom-btn-secondary">
+                    <i class="fa-solid fa-arrow-left me-2"></i> Profilga qaytish
+                </a>
+            </div>
+        </div>
+
+        <!-- ✅ O'ng menyu - To‘lovlar -->
+        <div class="col-md-9">
+            <div class="card shadow-lg border-0 rounded-lg">
+                <div class="card-header text-center">
+                    <h3 class="card-title fw-bold">
+                        <i class="fa-solid fa-history me-2"></i> To‘lov Tarixi
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <!-- 🔎 Filtrlash qismi -->
+                    <div class="mb-4 text-center">
+                        <button class="btn filter-btn active" data-filter="all">
+                            <i class="fa-solid fa-th-large me-1"></i> Hammasi
+                        </button>
+                        <button class="btn filter-btn" data-filter="pending">
+                            <i class="fa-solid fa-hourglass-half me-1"></i> Kutilmoqda
+                        </button>
+                        <button class="btn filter-btn" data-filter="approved">
+                            <i class="fa-solid fa-check-circle me-1"></i> Tasdiqlangan
+                        </button>
+                        <button class="btn filter-btn" data-filter="rejected">
+                            <i class="fa-solid fa-times-circle me-1"></i> Rad etilgan
+                        </button>
+                    </div>
+
+                    <!-- 📜 To‘lovlar ro‘yxati -->
+                    <div class="row">
+                        {% for payment in payments %}
+                        <div class="col-md-6 mb-4 payment-card" data-status="{{ payment.status }}">
+                            <div class="card shadow-sm border-0 rounded-lg p-3 payment-card-inner">
+                                <h5 class="fw-bold">
+                                    <i class="fa-solid fa-money-bill-wave me-2"></i> {{ payment.amount }} UZS
+                                </h5>
+                                <p class="text-muted mb-2">
+                                    <i class="date-sana fa-solid fa-calendar-alt me-1"></i> {{ payment.created_at|date:"Y-m-d H:i" }}
+                                </p>
+                                <span class="badge">
+                                    {% if payment.status == "pending" %}
+                                        <i class="fa-solid fa-hourglass-half me-1"></i> Kutilmoqda
+                                    {% elif payment.status == "approved" %}
+                                        <i class="fa-solid fa-check-circle me-1"></i> Tasdiqlangan
+                                    {% else %}
+                                        <i class="fa-solid fa-times-circle me-1"></i> Rad etilgan
+                                    {% endif %}
+                                </span>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="col-md-12 text-center py-4">
+                            <p class="text-muted">
+                                <i class="fa-solid fa-exclamation-circle me-1"></i> Sizda hali to‘lovlar mavjud emas.
+                            </p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ✅ JavaScript Filtrlash -->
+<script>
+    document.querySelectorAll('.filter-btn').forEach(button => {
+        button.addEventListener('click', function () {
+            // Barcha tugmalardan active classini olib tashlash
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            // Joriy tugmaga active classini qo‘shish
+            this.classList.add('active');
+
+            let filter = this.getAttribute('data-filter');
+            document.querySelectorAll('.payment-card').forEach(card => {
+                if (filter === "all" || card.getAttribute('data-status') === filter) {
+                    card.style.display = "block";
+                } else {
+                    card.style.display = "none";
+                }
+            });
+        });
+    });
+</script>
+
+<!-- ✅ CSS Dizayn -->
+<style>
+    /* Rejimlar uchun o‘zgaruvchanlar */
+    :root {
+        /* Light rejim uchun o‘zgaruvchanlar (default) */
+        --background-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        --card-bg: #ffffff;
+        --card-header-bg: linear-gradient(90deg, #007bff, #00c4ff);
+        --text-color: #333333;
+        --text-muted: #6c757d;
+        --input-bg: #f8f9fa;
+        --input-border: #ced4da;
+        --primary-gradient: #007bff;
+        --primary-gradient-hover: #0056b3;
+        --button-gradient: linear-gradient(90deg, #28a745, #34d058);
+        --button-gradient-hover: linear-gradient(90deg, #218838, #2eb347);
+        --secondary-button-bg: #6c757d;
+        --secondary-button-hover: #5a6268;
+        --shadow-color: rgba(0, 0, 0, 0.1);
+        --badge-pending-bg: #ffc107;
+        --badge-pending-text: #212529;
+        --badge-approved-bg: #28a745;
+        --badge-approved-text: #ffffff;
+        --badge-rejected-bg: #dc3545;
+        --badge-rejected-text: #ffffff;
+        --payment-card-pending-bg: linear-gradient(135deg, #ffca2c, #ffdd88);
+        --payment-card-approved-bg: linear-gradient(135deg, #28a745, #34d058);
+        --payment-card-rejected-bg: linear-gradient(135deg, #dc3545, #ff6b6b);
+        --filter-btn-bg: #e9ecef;
+        --filter-btn-text: #495057;
+        --filter-btn-hover-bg: #dee2e6;
+        --filter-btn-active-bg: #007bff;
+        --filter-btn-active-text: #ffffff;
+    }
+
+    /* Dark rejim uchun o‘zgaruvchanlar */
+    [data-theme="dark"] {
+        --background-gradient: linear-gradient(135deg, #1f2a44 0%, #3b4371 100%);
+        --card-bg: #2c2f3a;
+        --card-header-bg: linear-gradient(90deg, #1e90ff, #00c4ff);
+        --text-color: #e0e0e0;
+        --text-muted: #a0a0a0;
+        --input-bg: #3b3e4a;
+        --input-border: #5a5d6a;
+        --primary-gradient: #1e90ff;
+        --primary-gradient-hover: #1c75d1;
+        --button-gradient: linear-gradient(90deg, #28a745, #34d058);
+        --button-gradient-hover: linear-gradient(90deg, #218838, #2eb347);
+        --secondary-button-bg: #5a6268;
+        --secondary-button-hover: #4b5257;
+        --shadow-color: rgba(0, 0, 0, 0.3);
+        --badge-pending-bg: #d4a017;
+        --badge-pending-text: #ffffff;
+        --badge-approved-bg: #218838;
+        --badge-approved-text: #ffffff;
+        --badge-rejected-bg: #c82333;
+        --badge-rejected-text: #ffffff;
+        --payment-card-pending-bg: linear-gradient(135deg, #d4a017, #e6c34f);
+        --payment-card-approved-bg: linear-gradient(135deg, #218838, #2eb347);
+        --payment-card-rejected-bg: linear-gradient(135deg, #c82333, #e04b59);
+        --filter-btn-bg: #3b3e4a;
+        --filter-btn-text: #e0e0e0;
+        --filter-btn-hover-bg: #4a4d5a;
+        --filter-btn-active-bg: #1e90ff;
+        --filter-btn-active-text: #ffffff;
+    }
+
+    /* Umumiy uslublar */
+    .container {
+        min-height: 100vh;
+    }
+
+    .card {
+        background: var(--card-bg) !important;
+        border-radius: 20px !important;
+        box-shadow: 0 8px 20px var(--shadow-color) !important;
+        transition: transform 0.3s ease-in-out;
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+    }
+
+    .card-header {
+        background: var(--card-header-bg) !important;
+        border-top-left-radius: 20px !important;
+        border-top-right-radius: 20px !important;
+        padding: 15px;
+        color: #ffffff !important;
+    }
+
+    /* Profil rasmini markazlashtirish */
+    .profile-image {
+        display: block !important;
+        margin: 0 auto !important;
+    }
+
+    /* Matn va ikonka ranglari */
+    h3, h4, h5, .text-muted, .fa-solid {
+        color: var(--text-color) !important;
+    }
+
+    .text-muted {
+        color: var(--text-muted) !important;
+    }
+
+    /* Filtrlash tugmalari */
+    .filter-btn {
+        background: var(--filter-btn-bg) !important;
+        color: var(--filter-btn-text) !important;
+        border: none !important;
+        border-radius: 10px !important;
+        padding: 10px 20px !important;
+        margin: 5px !important;
+        transition: all 0.3s ease-in-out;
+        box-shadow: 0 4px 10px var(--shadow-color);
+    }
+
+    .filter-btn:hover {
+        background: var(--filter-btn-hover-bg) !important;
+        transform: scale(1.05);
+        box-shadow: 0 6px 15px var(--shadow-color);
+    }
+
+    .filter-btn.active {
+        background: var(--filter-btn-active-bg) !important;
+        color: var(--filter-btn-active-text) !important;
+        box-shadow: 0 6px 15px var(--shadow-color);
+    }
+
+    /* To‘lov kartalari */
+    .payment-card-inner {
+        background: var(--card-bg) !important;
+        transition: transform 0.3s ease-in-out;
+    }
+
+    .payment-card[data-status="pending"] .payment-card-inner {
+        background: var(--payment-card-pending-bg) !important;
+    }
+
+    .payment-card[data-status="approved"] .payment-card-inner {
+        background: var(--payment-card-approved-bg) !important;
+    }
+
+    .payment-card[data-status="rejected"] .payment-card-inner {
+        background: var(--payment-card-rejected-bg) !important;
+    }
+
+    .payment-card-inner:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px var(--shadow-color) !important;
+    }
+
+    /* Badge uslublari */
+    .badge {
+        font-size: 0.9rem;
+        padding: 8px 12px;
+        border-radius: 20px;
+        box-shadow: 0 2px 5px var(--shadow-color);
+    }
+
+    .badge.bg-warning {
+        background: var(--badge-pending-bg) !important;
+        color: var(--badge-pending-text) !important;
+    }
+
+    .badge.bg-success {
+        background: var(--badge-approved-bg) !important;
+        color: var(--badge-approved-text) !important;
+    }
+
+    .badge.bg-danger {
+        background: var(--badge-rejected-bg) !important;
+        color: var(--badge-rejected-text) !important;
+    }
+
+    /* Profilga qaytish tugmasi */
+    .custom-btn-secondary {
+        background: var(--secondary-button-bg) !important;
+        border: none !important;
+        padding: 12px !important;
+        border-radius: 10px !important;
+        transition: all 0.3s ease-in-out;
+        box-shadow: 0 4px 10px var(--shadow-color);
+        color: #ffffff !important;
+    }
+
+    .custom-btn-secondary:hover {
+        background: var(--secondary-button-hover) !important;
+        transform: scale(1.02);
+        box-shadow: 0 6px 15px var(--shadow-color);
+    }
+
+    /* Mobil moslashuvi */
+    @media (max-width: 576px) {
+        .card {
+            padding: 15px !important;
+        }
+
+        h3, h4 {
+            font-size: 1.5rem !important;
+        }
+
+        h5 {
+            font-size: 1.2rem !important;
+        }
+
+        .filter-btn {
+            padding: 8px 15px !important;
+            font-size: 0.9rem !important;
+        }
+
+        .custom-btn-secondary {
+            padding: 10px !important;
+            font-size: 0.9rem !important;
+        }
+
+        .payment-card {
+            margin-bottom: 20px !important;
+        }
+    }
+
+    .date-sana {
+        color: white;
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,174 @@
+{% extends "authenticated_base.html" %}
+
+{% block title %}To‘lov So‘rovi{% endblock %}
+
+{% block content %}
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+    <div class="card shadow-lg p-4 border-0 rounded-lg" style="max-width: 500px; width: 100%;">
+        <div class="card-body">
+            <h2 class="text-center text-primary fw-bold mb-4" style="font-size: 1.8rem;">
+                <i class="fa-solid fa-credit-card me-2"></i> To‘lov So‘rovi
+            </h2>
+            <p class="text-center text-muted mb-4">
+                Iltimos, <strong>{{ card_number }}</strong> kartasiga pul o‘tkazing va chekni yuklang.
+            </p>
+
+            <form method="post" action="{% url 'payments:request_payment' %}" enctype="multipart/form-data" class="mt-3">
+                {% csrf_token %}
+
+                <!-- Miqdor -->
+                <div class="mb-4">
+                    <label class="form-label fw-bold">
+                        <i class="fa-solid fa-money-bill-wave me-1 text-success"></i> Miqdor (UZS)
+                    </label>
+                    <input type="number" name="amount" id="amount" class="form-control custom-input" required min="1000" placeholder="Minimal: 1000 UZS">
+                    <small class="text-muted d-block mt-1">⚠ Minimal to‘lov summasi 1000 UZS</small>
+                </div>
+
+                <!-- Chek yuklash -->
+                <div class="mb-4">
+                    <label class="form-label fw-bold">
+                        <i class="fa-solid fa-camera me-1 text-primary"></i> Chek yuklang
+                    </label>
+                    <input type="file" name="receipt" id="receipt" class="form-control custom-input" accept="image/png, image/jpeg, image/jpg" required>
+                    <small class="text-muted d-block mt-1">⚠ Faqat PNG, JPG formatda (maks. 5MB)</small>
+                </div>
+
+                <!-- Yuborish tugmasi -->
+                <button type="submit" class="btn btn-primary w-100 fw-bold custom-btn">
+                    <i class="fa-solid fa-paper-plane me-2"></i> So‘rovni Yuborish
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- CSS -->
+<style>
+    /* Rejimlar uchun o‘zgaruvchanlar */
+    :root {
+        /* Light rejim uchun o‘zgaruvchanlar (default) */
+        --background-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        --card-bg: #ffffff;
+        --text-color: #333333;
+        --text-muted: #6c757d;
+        --input-bg: #f8f9fa;
+        --input-border: #ced4da;
+        --primary-gradient: #007bff;
+        --primary-gradient-hover: #0056b3;
+        --button-gradient: linear-gradient(90deg, #007bff, #00c4ff);
+        --button-gradient-hover: linear-gradient(90deg, #0056b3, #0095cc);
+        --shadow-color: rgba(0, 0, 0, 0.1);
+    }
+
+    /* Dark rejim uchun o‘zgaruvchanlar */
+    [data-theme="dark"] {
+        --background-gradient: linear-gradient(135deg, #1f2a44 0%, #3b4371 100%);
+        --card-bg: #2c2f3a;
+        --text-color: #e0e0e0;
+        --text-muted: #a0a0a0;
+        --input-bg: #3b3e4a;
+        --input-border: #5a5d6a;
+        --primary-gradient: #1e90ff;
+        --primary-gradient-hover: #1c75d1;
+        --button-gradient: linear-gradient(90deg, #1e90ff, #00c4ff);
+        --button-gradient-hover: linear-gradient(90deg, #1c75d1, #0095cc);
+        --shadow-color: rgba(0, 0, 0, 0.3);
+    }
+
+    /* Umumiy uslublar */
+    .container {
+        padding: 20px;
+        min-height: 80vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .card {
+        border-radius: 20px !important;
+        background: var(--card-bg) !important;
+        box-shadow: 0 8px 20px var(--shadow-color);
+        transition: transform 0.3s ease-in-out;
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+    }
+
+    /* Matn va ikonka ranglari */
+    h2, .form-label, .text-muted, .fa-solid {
+        color: var(--text-color) !important;
+    }
+
+    .text-muted {
+        color: var(--text-muted) !important;
+    }
+
+    /* Input maydonlari uchun uslublar */
+    .custom-input {
+        border: 1px solid var(--input-border) !important;
+        background-color: var(--input-bg) !important;
+        color: var(--text-color) !important;
+        border-radius: 8px !important;
+        padding: 12px !important;
+        transition: all 0.3s ease-in-out;
+    }
+
+    .custom-input:focus {
+        border-color: var(--primary-gradient) !important;
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.3) !important;
+        background-color: var(--input-bg) !important;
+    }
+
+    .custom-input::placeholder {
+        color: var(--text-muted) !important;
+    }
+
+    /* Tugma dizayni */
+    .custom-btn {
+        background: var(--button-gradient) !important;
+        border: none !important;
+        padding: 12px !important;
+        border-radius: 10px !important;
+        transition: all 0.3s ease-in-out;
+        box-shadow: 0 4px 10px var(--shadow-color);
+        color: #ffffff !important;
+    }
+
+    .custom-btn:hover {
+        background: var(--button-gradient-hover) !important;
+        transform: scale(1.02);
+        box-shadow: 0 6px 15px var(--shadow-color);
+    }
+
+    /* Ikonkalar rangini majburlash */
+    .text-success {
+        color: #28a745 !important; /* Dark rejimda ham yashil rang saqlanadi */
+    }
+
+    .text-primary {
+        color: var(--primary-gradient) !important;
+    }
+
+    /* Mobil moslashuvi */
+    @media (max-width: 576px) {
+        .card {
+            padding: 15px !important;
+        }
+
+        h2 {
+            font-size: 1.5rem !important;
+        }
+
+        .custom-input {
+            padding: 10px !important;
+        }
+
+        .custom-btn {
+            padding: 10px !important;
+            font-size: 0.9rem !important;
+        }
+    }
+</style>
+{% endblock %}

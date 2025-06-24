@@ -1,0 +1,239 @@
+{% extends 'authenticated_base.html' %}
+
+{% block title %}Fikr Qoldirish{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-lg border-0 rounded-lg">
+                <div class="card-header text-center py-4">
+                    <h2 class="fw-bold">
+                        <i class="fa-solid fa-comment-dots me-2"></i> Fikr Qoldiring
+                    </h2>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST" class="feedback-form">
+                        {% csrf_token %}
+
+                        <!-- ✅ Foydalanuvchi ma'lumoti -->
+                        <div class="user-info text-center mb-4">
+                            <p><i class="fa-solid fa-user me-2"></i><strong>Foydalanuvchi:</strong> {{ user.username }}</p>
+                            <p><i class="fa-solid fa-envelope me-2"></i><strong>Email:</strong> {{ user.email }}</p>
+                        </div>
+
+                        <!-- ✅ Fikr maydoni -->
+                        <div class="mb-4">
+                            <label for="message" class="form-label fw-bold">
+                                <i class="fa-solid fa-comment me-2"></i>Fikringiz:
+                            </label>
+                            <textarea id="message" name="message" class="form-control" rows="4" maxlength="150" required oninput="updateCharCount()"></textarea>
+
+                            <!-- 🔹 Belgilar soni hisoblagich -->
+                            <small id="char-count" class="char-count text-muted d-block mt-2">0 / 150</small>
+                        </div>
+
+                        <!-- ✅ Jo‘natish tugmasi -->
+                        <button type="submit" class="btn custom-btn w-100" id="submit-btn" disabled>
+                            <i class="fa-solid fa-paper-plane me-2"></i>Jo‘natish
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 🔹 JavaScript: Belgilar sanog‘i va tugmani boshqarish -->
+<script>
+    function updateCharCount() {
+        let message = document.getElementById("message");
+        let charCount = document.getElementById("char-count");
+        let submitBtn = document.getElementById("submit-btn");
+
+        let maxLength = 150;
+        let currentLength = message.value.length;
+
+        charCount.textContent = currentLength + " / " + maxLength;
+
+        // Maksimal uzunlikka yetganda qo‘shimcha yozishni to‘xtatish
+        if (currentLength >= maxLength) {
+            message.value = message.value.substring(0, maxLength);
+            charCount.classList.add("text-danger");
+        } else {
+            charCount.classList.remove("text-danger");
+        }
+
+        // ✅ Tugmani faollashtirish yoki bloklash
+        submitBtn.disabled = currentLength === 0;
+    }
+</script>
+
+<!-- ✅ CSS Dizayn -->
+<style>
+    /* Rejimlar uchun o‘zgaruvchanlar */
+    :root {
+        /* Light rejim uchun o‘zgaruvchanlar (default) */
+        --background-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        --card-bg: #ffffff;
+        --card-header-bg: linear-gradient(90deg, #007bff, #00c4ff);
+        --text-color: #333333;
+        --text-muted: #6c757d;
+        --input-bg: #f8f9fa;
+        --input-border: #ced4da;
+        --primary-gradient: linear-gradient(135deg, #007bff, #0056b3);
+        --primary-gradient-hover: linear-gradient(135deg, #0056b3, #003f80);
+        --shadow-color: rgba(0, 0, 0, 0.1);
+        --user-info-bg: #f8f9fa;
+        --user-info-shadow: rgba(0, 0, 0, 0.1);
+        --textarea-border: #ced4da;
+        --textarea-focus-border: #007bff;
+        --textarea-focus-shadow: rgba(0, 123, 255, 0.3);
+        --char-count-danger: #dc3545;
+    }
+
+    /* Dark rejim uchun o‘zgaruvchanlar */
+    [data-theme="dark"] {
+        --background-gradient: linear-gradient(135deg, #1f2a44 0%, #3b4371 100%);
+        --card-bg: #2c2f3a;
+        --card-header-bg: linear-gradient(90deg, #1e90ff, #00c4ff);
+        --text-color: #e0e0e0;
+        --text-muted: #a0a0a0;
+        --input-bg: #3b3e4a;
+        --input-border: #5a5d6a;
+        --primary-gradient: linear-gradient(135deg, #1e90ff, #1c75d1);
+        --primary-gradient-hover: linear-gradient(135deg, #1c75d1, #155fa0);
+        --shadow-color: rgba(0, 0, 0, 0.3);
+        --user-info-bg: #3b3e4a;
+        --user-info-shadow: rgba(0, 0, 0, 0.3);
+        --textarea-border: #5a5d6a;
+        --textarea-focus-border: #1e90ff;
+        --textarea-focus-shadow: rgba(30, 144, 255, 0.3);
+        --char-count-danger: #ff6b6b;
+    }
+
+    /* Umumiy uslublar */
+    .container {
+        min-height: 100vh;
+    }
+
+    .card {
+        background: var(--card-bg) !important;
+        border-radius: 20px !important;
+        box-shadow: 0 8px 20px var(--shadow-color) !important;
+        transition: transform 0.3s ease-in-out;
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+    }
+
+    .card-header {
+        background: var(--card-header-bg) !important;
+        border-top-left-radius: 20px !important;
+        border-top-right-radius: 20px !important;
+        color: #ffffff !important;
+    }
+
+    /* Matn va ikonka ranglari */
+    h2, .form-label, .user-info p, .char-count, .fa-solid {
+        color: var(--text-color) !important;
+    }
+
+    .text-muted {
+        color: var(--text-muted) !important;
+    }
+
+    .text-danger {
+        color: var(--char-count-danger) !important;
+    }
+
+    /* Foydalanuvchi ma'lumotlari */
+    .user-info {
+        background: var(--user-info-bg);
+        padding: 20px;
+        border-radius: 15px;
+        box-shadow: 0 4px 10px var(--user-info-shadow);
+        transition: all 0.3s ease-in-out;
+    }
+
+    .user-info:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px var(--user-info-shadow);
+    }
+
+    /* Fikr maydoni (textarea) */
+    .feedback-form textarea {
+        width: 100%;
+        padding: 15px;
+        border-radius: 10px;
+        border: 1px solid var(--textarea-border);
+        background: var(--input-bg);
+        color: var(--text-color) !important; /* Matn rangini rejimga moslashtirish */
+        transition: all 0.3s ease-in-out;
+        resize: vertical;
+    }
+
+    .feedback-form textarea:focus {
+        border-color: var(--textarea-focus-border);
+        box-shadow: 0 0 8px var(--textarea-focus-shadow);
+        outline: none;
+        background: var(--input-bg);
+    }
+
+    /* Jo‘natish tugmasi */
+    .custom-btn {
+        background: var(--primary-gradient);
+        color: #ffffff;
+        font-weight: bold;
+        padding: 12px 24px;
+        border-radius: 30px;
+        transition: all 0.3s ease-in-out;
+        box-shadow: 0 4px 10px var(--shadow-color);
+        border: none;
+    }
+
+    .custom-btn:hover {
+        background: var(--primary-gradient-hover);
+        transform: scale(1.05);
+        box-shadow: 0 6px 15px var(--shadow-color);
+    }
+
+    .custom-btn:disabled {
+        background: var(--primary-gradient);
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+    }
+
+    /* Mobil moslashuvi */
+    @media (max-width: 576px) {
+        .card {
+            padding: 15px !important;
+        }
+
+        h2 {
+            font-size: 1.5rem !important;
+        }
+
+        .form-label {
+            font-size: 1rem !important;
+        }
+
+        .feedback-form textarea {
+            padding: 10px !important;
+            font-size: 0.9rem !important;
+        }
+
+        .custom-btn {
+            padding: 10px 20px !important;
+            font-size: 1rem !important;
+        }
+
+        .user-info {
+            padding: 15px !important;
+        }
+    }
+</style>
+{% endblock %}

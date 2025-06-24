@@ -1,0 +1,225 @@
+{% extends 'authenticated_base.html' %}
+
+{% block title %}Profilni Tahrirlash{% endblock %}
+
+{% block content %}
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+    <div class="row justify-content-center w-100">
+        <div class="col-md-6">
+            <div class="card mt-5 shadow-lg border-0 rounded-lg">
+                <div class="card-header text-center">
+                    <h3 class="fw-bold">
+                        <i class="fa-solid fa-user-pen me-2"></i> Profilni Tahrirlash
+                    </h3>
+                    <p class="text-muted mt-2">
+                        Bu yerda profilingiz ma'lumotlarini o‘zgartirishingiz mumkin. Ismingizni, elektron pochtangizni yoki profil rasmingizni yangilang.
+                    </p>
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+
+                        <!-- Forma maydonlari -->
+                        <div class="form-group mb-4">
+                            {% for field in form %}
+                                <div class="mb-3">
+                                    <label for="{{ field.id_for_label }}" class="form-label fw-bold">
+                                        {% if field.label == "Username" %}
+                                            <i class="fa-solid fa-user me-1"></i> Foydalanuvchi nomi
+                                        {% elif field.label == "Email" %}
+                                            <i class="fa-solid fa-envelope me-1"></i> Elektron pochta
+                                        {% elif field.label == "Image" %}
+                                            <i class="fa-solid fa-camera me-1"></i> Profil rasmi
+                                        {% else %}
+                                            {{ field.label }}
+                                        {% endif %}
+                                    </label>
+                                    {% if field.label == "Username" %}
+                                        <small class="text-muted d-block mb-2">Ismingizni kiriting (masalan, @john_doe)</small>
+                                    {% elif field.label == "Email" %}
+                                        <small class="text-muted d-block mb-2">Elektron pochtangizni kiriting (masalan, example@gmail.com)</small>
+                                    {% elif field.label == "Image" %}
+                                        <small class="text-muted d-block mb-2">Rasmni yuklang (PNG, JPG formatida, maks. 5MB)</small>
+                                    {% endif %}
+                                    {% if field.name == "image" %}
+                                        <input type="file" name="{{ field.name }}" id="{{ field.id_for_label }}" class="form-control custom-input" accept="image/png, image/jpeg, image/jpg">
+                                    {% else %}
+                                        <input type="text" name="{{ field.name }}" id="{{ field.id_for_label }}" class="form-control custom-input" value="{{ field.value|default_if_none:'' }}">
+                                    {% endif %}
+                                    {% if field.errors %}
+                                        <div class="text-danger mt-1">
+                                            {% for error in field.errors %}
+                                                <small>{{ error }}</small>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                        </div>
+
+                        <!-- Saqlash tugmasi -->
+                        <button type="submit" class="btn btn-success w-100 custom-btn">
+                            <i class="fa-solid fa-floppy-disk me-2"></i> Saqlash
+                        </button>
+                    </form>
+
+                    <!-- Ortga tugmasi -->
+                    <a href="{% url 'users:profile' %}" class="btn btn-secondary w-100 mt-3 custom-btn-secondary">
+                        <i class="fa-solid fa-arrow-left me-2"></i> Ortga
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- CSS -->
+<style>
+    /* Rejimlar uchun o‘zgaruvchanlar */
+    :root {
+        /* Light rejim uchun o‘zgaruvchanlar (default) */
+        --background-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        --card-bg: #ffffff;
+        --card-header-bg: linear-gradient(90deg, #007bff, #00c4ff);
+        --text-color: #333333;
+        --text-muted: #6c757d;
+        --input-bg: #f8f9fa;
+        --input-border: #ced4da;
+        --primary-gradient: #007bff;
+        --primary-gradient-hover: #0056b3;
+        --button-gradient: linear-gradient(90deg, #28a745, #34d058);
+        --button-gradient-hover: linear-gradient(90deg, #218838, #2eb347);
+        --secondary-button-bg: #6c757d;
+        --secondary-button-hover: #5a6268;
+        --shadow-color: rgba(0, 0, 0, 0.1);
+    }
+
+    /* Dark rejim uchun o‘zgaruvchanlar */
+    [data-theme="dark"] {
+        --background-gradient: linear-gradient(135deg, #1f2a44 0%, #3b4371 100%);
+        --card-bg: #2c2f3a;
+        --card-header-bg: linear-gradient(90deg, #1e90ff, #00c4ff);
+        --text-color: #e0e0e0;
+        --text-muted: #a0a0a0;
+        --input-bg: #3b3e4a;
+        --input-border: #5a5d6a;
+        --primary-gradient: #1e90ff;
+        --primary-gradient-hover: #1c75d1;
+        --button-gradient: linear-gradient(90deg, #28a745, #34d058);
+        --button-gradient-hover: linear-gradient(90deg, #218838, #2eb347);
+        --secondary-button-bg: #5a6268;
+        --secondary-button-hover: #4b5257;
+        --shadow-color: rgba(0, 0, 0, 0.3);
+    }
+
+    /* Umumiy uslublar */
+    .container {
+        padding: 20px;
+        min-height: 80vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .card {
+        border-radius: 20px !important;
+        background: var(--card-bg) !important;
+        box-shadow: 0 8px 20px var(--shadow-color);
+        transition: transform 0.3s ease-in-out;
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+    }
+
+    .card-header {
+        background: var(--card-header-bg) !important;
+        border-top-left-radius: 20px !important;
+        border-top-right-radius: 20px !important;
+        padding: 15px;
+        color: #ffffff !important;
+    }
+
+    /* Matn va ikonka ranglari */
+    h3, .form-label, .text-muted, .fa-solid {
+        color: var(--text-color) !important;
+    }
+
+    .text-muted {
+        color: white !important;
+    }
+
+    /* Input maydonlari uchun uslublar */
+    .custom-input {
+        border: 1px solid var(--input-border) !important;
+        background-color: var(--input-bg) !important;
+        color: var(--text-color) !important;
+        border-radius: 8px !important;
+        padding: 12px !important;
+        transition: all 0.3s ease-in-out;
+    }
+
+    .custom-input:focus {
+        border-color: var(--primary-gradient) !important;
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.3) !important;
+        background-color: var(--input-bg) !important;
+    }
+
+    .custom-input::placeholder {
+        color: var(--text-muted) !important;
+    }
+
+    /* Tugma dizayni */
+    .custom-btn {
+        background: var(--button-gradient) !important;
+        border: none !important;
+        padding: 12px !important;
+        border-radius: 10px !important;
+        transition: all 0.3s ease-in-out;
+        box-shadow: 0 4px 10px var(--shadow-color);
+        color: #ffffff !important;
+    }
+
+    .custom-btn:hover {
+        background: var(--button-gradient-hover) !important;
+        transform: scale(1.02);
+        box-shadow: 0 6px 15px var(--shadow-color);
+    }
+
+    .custom-btn-secondary {
+        background: var(--secondary-button-bg) !important;
+        border: none !important;
+        padding: 12px !important;
+        border-radius: 10px !important;
+        transition: all 0.3s ease-in-out;
+        box-shadow: 0 4px 10px var(--shadow-color);
+        color: #ffffff !important;
+    }
+
+    .custom-btn-secondary:hover {
+        background: var(--secondary-button-hover) !important;
+        transform: scale(1.02);
+        box-shadow: 0 6px 15px var(--shadow-color);
+    }
+
+    /* Mobil moslashuvi */
+    @media (max-width: 576px) {
+        .card {
+            padding: 15px !important;
+        }
+
+        h3 {
+            font-size: 1.5rem !important;
+        }
+
+        .custom-input {
+            padding: 10px !important;
+        }
+
+        .custom-btn, .custom-btn-secondary {
+            padding: 10px !important;
+            font-size: 0.9rem !important;
+        }
+    }
+</style>
+{% endblock %}

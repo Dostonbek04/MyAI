@@ -1,0 +1,236 @@
+<!-- templates/index.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+<main>
+    <!-- 🎯 Hero Section -->
+    <div class="hero-section text-center text-white d-flex flex-column justify-content-center">
+        <h1 class="display-2 fw-bold">AI Yordamida Taqdimotlar Yaratish Oson!</h1>
+        <p class="lead fw-bold">Matn yozish va rasm izlashga vaqt sarflamang – AI barchasini o‘zi yaratadi!</p>
+        {% if user.is_authenticated %}
+            <a href="{% url 'presentations:create_presentation' %}" class="btn custom-btn btn-lg mt-3">
+                <span class="icon">🚀</span>Taqdimot Yaratish
+            </a>
+        {% else %}
+            <a href="{% url 'users:register' %}" class="btn custom-btn btn-lg mt-3">Boshlash</a>
+        {% endif %}
+    </div>
+
+    <!-- 🏆 Bizning Afzalliklarimiz -->
+    <div class="container text-center py-5">
+        <h2 class="fw-bold mb-5">Nega aynan PresentlyAI?</h2>
+        <div class="row mt-4">
+            <div class="col-md-4 mb-4">
+                <div class="feature-card fade-in-up">
+                    <span class="feature-icon">📌</span>
+                    <h3>150+ Shablon</h3>
+                    <p>Turli dizayn va mavzulardagi tayyor shablonlar.</p>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="feature-card fade-in-up">
+                    <span class="feature-icon">🤖</span>
+                    <h3>AI Matn & Rasm</h3>
+                    <p>GPT va AI yordamida avtomatik tarkib yaratish.</p>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="feature-card fade-in-up">
+                    <span class="feature-icon">☁️</span>
+                    <h3>Dropbox Saqlash</h3>
+                    <p>Yaratilgan taqdimotlaringizni xavfsiz saqlang.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 📊 Statistika -->
+    <div class="stats-section text-center py-5">
+        <div class="container">
+            <h2 class="fw-bold mb-5">Bizning Statistikamiz</h2>
+            <div class="row mt-4">
+                <div class="col-md-4 mb-4">
+                    <div class="stat-card fade-in-up">
+                        <h2 class="display-4" id="totalUsers">0</h2>
+                        <p>Foydalanuvchi</p>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="stat-card fade-in-up">
+                        <h2 class="display-4">10,000+</h2>
+                        <p>Yaratilgan Taqdimotlar</p>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="stat-card fade-in-up">
+                        <h2 class="display-4">150+</h2>
+                        <p>Shablonlar</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ⭐ Foydalanuvchilar Fikri -->
+    <div class="container py-5">
+        <h2 class="fw-bold text-center mb-5">💬 Foydalanuvchilar Fikri</h2>
+        <div class="feedback-slider-container">
+            <div class="feedback-slider" id="feedbackSlider">
+                <!-- Feedback card'lari dinamik tarzda JS bilan to'ldiriladi -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 🔹 Modal Oyna -->
+    <div id="feedbackModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">×</span>
+            <h4 class="modal-user" id="modalUsername"></h4>
+            <p class="modal-date" id="modalDate"></p>
+            <p class="modal-text" id="modalMessage"></p>
+        </div>
+    </div>
+
+    <!-- CSS -->
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        .hero-section {
+            background: linear-gradient(135deg, #4a90e2, #50e3c2);
+            height: 100vh;
+            padding: 20px;
+        }
+        .hero-section h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        .hero-section p {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .custom-btn {
+            background-color: #ff6f61;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+        .custom-btn:hover {
+            background-color: #e65b50;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .feature-card, .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            transition: transform 0.3s;
+        }
+        .feature-card:hover, .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        .feature-icon, .stat-card h2 {
+            font-size: 2rem;
+            color: #4a90e2;
+            margin-bottom: 10px;
+        }
+        .stats-section {
+            background: #e9ecef;
+            padding: 40px 0;
+        }
+        .feedback-slider-container {
+            overflow: hidden;
+            position: relative;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 500px;
+            text-align: center;
+        }
+        .close {
+            position: absolute;
+            right: 20px;
+            top: 10px;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        @media (max-width: 768px) {
+            .hero-section h1 {
+                font-size: 2rem;
+            }
+            .hero-section p {
+                font-size: 1.2rem;
+            }
+            .feature-card, .stat-card {
+                height: auto;
+            }
+        }
+    </style>
+
+    <!-- JavaScript -->
+    <script>
+        // Foydalanuvchilar sonini olish va optimallashtirish
+        function fetchTotalUsers() {
+            fetch('/users/total-users/')
+                .then(response => response.json())
+                .then(data => {
+                    let total = data.total_users;
+                    let displayText = total;
+                    if (total > 1500) displayText = "1500+";
+                    else if (total > 1000) displayText = "1000+";
+                    else if (total > 150) displayText = "150+";
+                    else if (total > 100) displayText = "100+";
+                    document.getElementById('totalUsers').textContent = displayText;
+                })
+                .catch(error => console.error('Xatolik:', error));
+        }
+
+        // Sahifa yuklanganda foydalanuvchilar sonini olish
+        window.onload = fetchTotalUsers;
+
+        // Modal funksiyasi (masalan, kelajakda foydalanuvchi fikrlarini ko'rsatish uchun)
+        function openModal(username, date, message) {
+            document.getElementById('modalUsername').textContent = username;
+            document.getElementById('modalDate').textContent = date;
+            document.getElementById('modalMessage').textContent = message;
+            document.getElementById('feedbackModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('feedbackModal').style.display = 'none';
+        }
+
+        // Feedback slider (masalan, kelajakda dinamik ma'lumotlar bilan to'ldirish uchun)
+        // Hozircha bo‘sh, keyinchalik API orqali to‘ldirilishi mumkin
+    </script>
+</main>
+{% endblock %}

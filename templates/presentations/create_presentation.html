@@ -1,0 +1,487 @@
+{% extends "authenticated_base.html" %}
+{% load static %}
+{% block title %}PresentlyAI - Taqdimot Yaratish{% endblock %}
+
+{% block content %}
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card shadow-lg border-0 rounded-lg">
+                    <div class="card-header text-center py-4">
+                        <h2 class="fw-bold">
+                            <i class="fa-solid fa-chalkboard-user me-2"></i> Yangi Taqdimot Yaratish - 1-qadam
+                        </h2>
+                    </div>
+                    <div class="card-body p-4">
+                        <div id="error-message" class="alert alert-danger alert-dismissible fade d-none" role="alert">
+                            <span id="error-text"></span>
+                            <button type="button" class="btn-close" onclick="hideErrorMessage()"></button>
+                        </div>
+
+                        <form id="presentation-form">
+                            <div class="d-flex justify-content-between mb-4">
+                                <div>
+                                    <label class="form-label fw-bold">
+                                        <i class="fa-solid fa-list me-2"></i>Listlar soni
+                                    </label>
+                                    <select name="list_count" id="list_count" class="form-select form-select-sm" required>
+                                        <option value="8">8 cards</option>
+                                        <option value="10">10 cards</option>
+                                        <option value="15">15 cards</option>
+                                        <option value="20">20 cards</option>
+                                        <option value="25">25 cards</option>
+                                        <option value="30">30 cards</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="form-label fw-bold">
+                                        <i class="fa-solid fa-image me-2"></i>Rasmlar bilanmi?
+                                    </label>
+                                    <select name="with_images" id="with_images" class="form-select form-select-sm">
+                                        <option value="false">Rasmsiz</option>
+                                        <option value="true">Rasmli</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="form-label fw-bold">
+                                        <i class="fa-solid fa-globe me-2"></i>Til tanlash
+                                    </label>
+                                    <select name="language" id="language" class="form-select form-select-sm" disabled>
+                                        <option value="uz" selected>O‘zbek tili</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="mb-4 position-relative topic-subject-container">
+                                <div class="topic-field me-2">
+                                    <label class="form-label fw-bold">
+                                        <i class="fa-solid fa-book me-2"></i>Mavzu
+                                    </label>
+                                    <input
+                                        type="text"
+                                        name="topic"
+                                        id="topic"
+                                        class="form-control"
+                                        placeholder="Masalan: Son suyagi umumiy tafsilotlar"
+                                        required
+                                    />
+                                </div>
+                                <div class="subject-field">
+                                    <label class="form-label fw-bold">
+                                        <i class="fa-solid fa-flask me-2"></i>Fan
+                                    </label>
+                                    <input
+                                        type="text"
+                                        name="subject"
+                                        id="subject"
+                                        class="form-control"
+                                        placeholder="Masalan: Anatomiya yoki Matematika"
+                                        required
+                                    />
+                                </div>
+                                <div class="regenerate-btn-container d-none">
+                                    <button
+                                        type="button"
+                                        class="btn btn-sm regenerate-btn"
+                                        onclick="showRegenerateModal()"
+                                        title="Yangi sarlavhalar yaratish"
+                                    >
+                                        <i class="bi bi-arrow-repeat"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="text-center mb-4">
+                                <button
+                                    type="button"
+                                    id="generate-btn"
+                                    class="btn btn-lg custom-btn d-none"
+                                    onclick="regenerateTitles()"
+                                >
+                                    <span class="button-text">
+                                        <i class="fa-solid fa-magic-wand-sparkles me-2"></i>Sarlavhalar Yaratish
+                                    </span>
+                                    <span class="loading-spinner d-none">
+                                        <span class="spinner-border spinner-border-sm pulse" role="status" aria-hidden="true"></span>
+                                        Yuklanmoqda...
+                                    </span>
+                                </button>
+                            </div>
+
+                            <div id="titles-section" class="mb-4 titles-section d-none">
+                                <label class="form-label fw-bold">
+                                    <i class="fa-solid fa-list-check me-2"></i>Outline
+                                </label>
+                                <div id="titles-list"></div>
+                            </div>
+
+                            <div class="text-center">
+                                <button
+                                    type="submit"
+                                    id="next-btn"
+                                    class="btn btn-lg custom-btn d-none"
+                                    onclick="handleNext(event)"
+                                >
+                                    <i class="fa-solid fa-arrow-right me-2"></i>Keyingi
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal oynasi -->
+        <div class="modal fade" id="confirmRegenerateModal" tabindex="-1" aria-labelledby="confirmRegenerateModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="confirmRegenerateModalLabel">
+                            <i class="fa-solid fa-sync-alt me-2"></i>Yangi sarlavhalar yaratish
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Hozirgi sarlavhalar o‘chiriladi va yangi sarlavhalar yaratiladi. Davom etishni xohlaysizmi?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Yo‘q</button>
+                        <button type="button" class="btn btn-primary" onclick="regenerateTitles()">Ha</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading overlay -->
+        <div id="loading-overlay" class="loading-overlay d-none">
+            <div class="loading-spinner-overlay">
+                <div class="spinner-border spinner-border-lg text-primary" role="status">
+                    <span class="visually-hidden">Yuklanmoqda...</span>
+                </div>
+                <p class="mt-2">Yuklanmoqda...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JavaScript -->
+    <script>
+    let loading = false;
+    let topic = '';
+    let subject = '';
+    let listCount = '8';
+    let withImages = false;
+    let titles = [];
+    let editingIndex = null;
+    let editValue = '';
+
+    // LocalStorage’dan ma'lumotlarni yuklash
+    document.addEventListener('DOMContentLoaded', () => {
+        console.log('Sahifa yuklandi.');
+        const savedData = localStorage.getItem('presentationData');
+        if (savedData) {
+            const data = JSON.parse(savedData);
+            topic = data.topic || '';
+            subject = data.subject || '';
+            listCount = data.list_count || '8';
+            withImages = data.with_images || false;
+            titles = data.titles || [];
+
+            document.getElementById('topic').value = topic;
+            document.getElementById('subject').value = subject;
+            document.getElementById('list_count').value = listCount;
+            document.getElementById('with_images').value = withImages ? 'true' : 'false';
+
+            if (titles.length > 0) {
+                renderTitles();
+                document.querySelector('.regenerate-btn-container').classList.remove('d-none');
+                document.getElementById('titles-section').classList.remove('d-none');
+                document.getElementById('next-btn').classList.remove('d-none');
+            }
+        }
+
+        // Input maydonlarini tinglash
+        document.getElementById('topic').addEventListener('input', (e) => {
+            topic = e.target.value;
+            updateGenerateButtonVisibility();
+        });
+        document.getElementById('subject').addEventListener('input', (e) => {
+            subject = e.target.value;
+            updateGenerateButtonVisibility();
+        });
+        document.getElementById('list_count').addEventListener('change', (e) => {
+            listCount = e.target.value;
+        });
+        document.getElementById('with_images').addEventListener('change', (e) => {
+            withImages = e.target.value === 'true';
+        });
+
+        // Avtomatik generateTitles chaqiruvini olib tashladik
+        // generateTitles() faqat tugma bosilganda ishlaydi
+    });
+
+    // Tugma ko‘rinishini yangilash
+    function updateGenerateButtonVisibility() {
+        const isTopicFilled = topic.trim().length > 0;
+        const isSubjectFilled = subject.trim().length > 0;
+        const hasTitles = titles.length > 0;
+        const generateBtn = document.getElementById('generate-btn');
+        if (isTopicFilled && isSubjectFilled && !hasTitles) {
+            generateBtn.classList.remove('d-none');
+        } else {
+            generateBtn.classList.add('d-none');
+        }
+    }
+
+    // Sarlavhalarni yaratish yoki qayta yaratish
+    async function regenerateTitles() {
+        const generateBtn = document.getElementById('generate-btn');
+        const loadingOverlay = document.getElementById('loading-overlay');
+        const modal = document.getElementById('confirmRegenerateModal');
+
+        // Yuklanish holatini ko‘rsatish
+        generateBtn.querySelector('.button-text').classList.add('d-none');
+        generateBtn.querySelector('.loading-spinner').classList.remove('d-none');
+        loadingOverlay.classList.remove('d-none');
+
+        try {
+            // 1-qadam: Ma'lumotlarni saqlash uchun create_presentation URL’ga so‘rov
+            const formData = new FormData();
+            formData.append('topic', topic);
+            formData.append('subject', subject);
+            formData.append('list_count', listCount);
+            formData.append('with_images', withImages.toString());
+            formData.append('csrfmiddlewaretoken', getCsrfToken());
+
+            const saveResponse = await fetch('/presentations/create/', {
+                method: 'POST',
+                body: formData,
+            });
+
+            if (!saveResponse.ok) {
+                throw new Error('Ma\'lumotlarni saqlashda xato yuz berdi');
+            }
+
+            // 2-qadam: Sarlavhalarni generatsiya qilish uchun generate_titles URL’ga so‘rov
+            const generateResponse = await fetch('/presentations/generate_titles/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCsrfToken(),
+                },
+                body: JSON.stringify({}),
+            });
+
+            const data = await generateResponse.json();
+            if (data.error) {
+                throw new Error(data.error);
+            }
+
+            titles = data.titles;
+            renderTitles();
+
+            // LocalStorage’ni yangilash
+            const presentationData = {
+                topic,
+                subject,
+                list_count: listCount,
+                with_images: withImages,
+                titles,
+            };
+            localStorage.setItem('presentationData', JSON.stringify(presentationData));
+
+            // UI yangilash
+            document.querySelector('.regenerate-btn-container').classList.remove('d-none');
+            document.getElementById('titles-section').classList.remove('d-none');
+            document.getElementById('next-btn').classList.remove('d-none');
+        } catch (error) {
+            showErrorMessage(error.message || 'Sarlavhalarni generatsiya qilishda xato yuz berdi.');
+            console.error('Xato:', error);
+        } finally {
+            generateFCB('generate-btn', false);
+            loadingOverlay.classList.add('d-none');
+            const modalInstance = bootstrap.Modal.getInstance(modal);
+            if (modalInstance) modalInstance.hide();
+        }
+    }
+
+    // Sarlavhalarni ko‘rsatish
+    function renderTitles() {
+        const titlesList = document.getElementById('titles-list');
+        titlesList.innerHTML = '';
+        titles.forEach((title, index) => {
+            const div = document.createElement('div');
+            div.className = 'mb-3 p-3 title-card fade-in-up';
+            div.style.animationDelay = `${index * 0.1}s`;
+            div.innerHTML = `
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        ${index + 1}. <span class="title-text">${title}</span>
+                    </h5>
+                    <button
+                        type="button"
+                        class="btn btn-sm edit-btn"
+                        onclick="handleEdit(${index}, '${title}')"
+                    >
+                        <i class="bi bi-pencil"></i>
+                    </button>
+                </div>
+                <div class="edit-input mt-2 d-none">
+                    <input
+                        type="text"
+                        class="form-control edit-title-input"
+                        value="${title}"
+                        required
+                    />
+                    <button
+                        type="button"
+                        class="btn btn-sm save-btn mt-2"
+                        onclick="handleSave(${index})"
+                    >
+                        Saqlash
+                    </button>
+                </div>
+            `;
+            titlesList.appendChild(div);
+        });
+    }
+
+    // Tahrirlashni boshlash
+    function handleEdit(index, title) {
+        editingIndex = index;
+        editValue = title;
+
+        const titleCards = document.querySelectorAll('#titles-list .title-card');
+        titleCards.forEach((card, idx) => {
+            const editInput = card.querySelector('.edit-input');
+            const titleText = card.querySelector('.title-text');
+            const editBtn = card.querySelector('.edit-btn');
+            if (idx === index) {
+                editInput.classList.remove('d-none');
+                titleText.classList.add('d-none');
+                editBtn.classList.add('d-none');
+                editInput.querySelector('input').value = editValue;
+                editInput.querySelector('input').addEventListener('input', (e) => {
+                    editValue = e.target.value;
+                });
+            } else {
+                editInput.classList.add('d-none');
+                titleText.classList.remove('d-none');
+                editBtn.classList.remove('d-none');
+            }
+        });
+    }
+
+    // Tahrirni saqlash
+    function handleSave(index) {
+        titles[index] = editValue;
+        renderTitles();
+
+        // LocalStorage’ni yangilash
+        const presentationData = {
+            topic,
+            subject,
+            list_count: listCount,
+            with_images: withImages,
+            titles,
+        };
+        localStorage.setItem('presentationData', JSON.stringify(presentationData));
+
+        editingIndex = null;
+    }
+
+    // Keyingi qadamga o‘tish
+    async function handleNext(event) {
+        event.preventDefault();
+        if (loading) return;
+
+        loading = true;
+        const submitBtn = document.getElementById('next-btn');
+        const loadingOverlay = document.getElementById('loading-overlay');
+        submitBtn.querySelector('.button-text')?.classList.add('d-none');
+        submitBtn.querySelector('.loading-spinner')?.classList.remove('d-none');
+        loadingOverlay.classList.remove('d-none');
+
+        const formData = new FormData();
+        titles.forEach(title => formData.append('titles', title));
+        formData.append('csrfmiddlewaretoken', getCsrfToken());
+
+        try {
+            const response = await fetch('/presentations/save_titles/', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': getCsrfToken(),
+                },
+            });
+            if (response.ok) {
+                window.location.href = '/presentations/select-template/';
+            } else {
+                const data = await response.json();
+                showErrorMessage(data.error || 'Sarlavhalarni saqlashda xato yuz berdi.');
+            }
+        } catch (err) {
+            showErrorMessage('Sarlavhalarni saqlashda xato yuz berdi.');
+            console.error('Xato:', err);
+        } finally {
+            loading = false;
+            submitBtn.querySelector('.button-text')?.classList.remove('d-none');
+            submitBtn.querySelector('.loading-spinner')?.classList.add('d-none');
+            loadingOverlay.classList.add('d-none');
+        }
+    }
+
+    // CSRF tokenini olish
+    function getCsrfToken() {
+        const name = 'csrftoken';
+        const cookies = document.cookie.split(';');
+        for (let cookie of cookies) {
+            cookie = cookie.trim();
+            if (cookie.startsWith(name + '=')) {
+                return cookie.substring(name.length + 1);
+            }
+        }
+        console.error('CSRF token topilmadi!');
+        return '';
+    }
+
+    // Xato xabarini ko‘rsatish
+    function showErrorMessage(message) {
+        const errorMessageDiv = document.getElementById('error-message');
+        const errorText = document.getElementById('error-text');
+        errorText.textContent = message;
+        errorMessageDiv.classList.remove('d-none');
+        errorMessageDiv.classList.add('show');
+        setTimeout(() => {
+            errorMessageDiv.classList.add('d-none');
+        }, 5000);
+    }
+
+    // Xato xabarini yashirish
+    function hideErrorMessage() {
+        const errorMessageDiv = document.getElementById('error-message');
+        errorMessageDiv.classList.add('d-none');
+    }
+
+    // Modalni ko‘rsatish
+    function showRegenerateModal() {
+        const modal = new bootstrap.Modal(document.getElementById('confirmRegenerateModal'));
+        modal.show();
+    }
+
+    // generateFCB helper funksiyasi
+    function generateFCB(btnId, isLoading) {
+        const btn = document.getElementById(btnId);
+        if (isLoading) {
+            btn.querySelector('.button-text').classList.add('d-none');
+            btn.querySelector('.loading-spinner').classList.remove('d-none');
+        } else {
+            btn.querySelector('.button-text').classList.remove('d-none');
+            btn.querySelector('.loading-spinner').classList.add('d-none');
+        }
+    }
+</script>
+<!-- CSS havolasi -->
+    <link rel="stylesheet" href="{% static 'presentations/create_presentations.css' %}">
+{% endblock %}

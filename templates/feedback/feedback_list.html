@@ -1,0 +1,23 @@
+{% extends 'authenticated_base.html' %}
+
+{% block title %}Foydalanuvchi Sharhlari{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2 class="text-center">Foydalanuvchi Sharhlari</h2>
+    <div class="row">
+        {% for feedback in feedbacks %}
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <p class="card-text">"{{ feedback.message }}"</p>
+                    <p class="text-muted">- {{ feedback.name }}</p>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <p class="text-center">Hozircha sharh mavjud emas.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

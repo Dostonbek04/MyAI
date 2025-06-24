@@ -1,0 +1,243 @@
+{% extends "authenticated_base.html" %}
+{% load static %}
+
+{% block title %}PresentlyAI - Shablon Tanlash{% endblock %}
+
+{% block content %}
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-md-10">
+                <div class="card shadow-lg border-0 rounded-lg">
+                    <div class="card-header text-center py-4">
+                        <h2 class="fw-bold">
+                            <i class="fa-solid fa-paint-roller me-2"></i>Shablon Tanlash - 2-qadam
+                        </h2>
+                    </div>
+                    <div class="card-body p-4">
+                        <div id="error-container" class="alert-container mb-4 d-none">
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                <span id="error-message"></span>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        </div>
+
+                        <form id="template-form" onsubmit="handleSubmit(event)">
+                            <input type="hidden" name="csrfmiddlewaretoken" value="{% csrf_token %}">
+
+                            <div class="row">
+                                <div class="col-md-7 mb-4">
+                                    <h4 class="fw-bold mb-3">
+                                        <i class="fa-solid fa-eye me-2"></i>Shablon Preview
+                                    </h4>
+                                    <div id="preview-container" class="preview-box shadow-sm rounded">
+                                        <img id="preview-image" src="" alt="Shablon Preview" class="img-fluid">
+                                    </div>
+                                    <div class="mt-3 text-center">
+                                        <label class="form-label fw-bold">
+                                            <i class="fa-solid fa-list me-2"></i>Listlar soni
+                                        </label>
+                                        <p id="list-count" class="form-control-static">8</p>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-5 mb-4">
+                                    <h4 class="fw-bold mb-3">
+                                        <i class="fa-solid fa-palette me-2"></i>Shablon Tanlash
+                                    </h4>
+                                    <div class="template-type-buttons mb-3">
+                                        <button type="button" class="btn template-type-btn active" data-type="light" onclick="setTemplateType('light')">Light</button>
+                                        <button type="button" class="btn template-type-btn" data-type="dark" onclick="setTemplateType('dark')">Dark</button>
+                                        <button type="button" class="btn template-type-btn" data-type="professional" onclick="setTemplateType('professional')">Professional</button>
+                                    </div>
+
+                                    <div id="template-options" class="template-options-container"></div>
+                                </div>
+                            </div>
+
+                            <input type="hidden" name="template_type" id="template_type" value="light">
+                            <input type="hidden" name="style_index" id="style_index" value="0">
+
+                            <div class="text-center" id="submit-button-container">
+                                <button type="submit" class="btn btn-lg custom-btn" id="create-presentation-btn">
+                                    <span class="button-text">
+                                        <i class="fa-solid fa-check me-2"></i>Taqdimotni Yaratish
+                                    </span>
+                                    <span class="loading-spinner d-none">
+                                        <span class="spinner-border spinner-border-sm pulse" role="status" aria-hidden="true"></span>
+                                        Yuklanmoqda...
+                                    </span>
+                                </button>
+                            </div>
+                        </form>
+
+                        <div id="loading-overlay" class="loading-overlay d-none">
+                            <div class="loading-content">
+                                <div class="css-spinner"></div>
+                                <p class="loading-text">Yaratilmoqda...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JavaScript -->
+    <script>
+        // Backenddan kelgan shablonlar
+        const templates = {{ templates|safe }};
+        let selectedTemplateType = 'light';
+        let selectedStyleIndex = 0;
+        let loading = false;
+
+        // localStorage dan ma'lumotlarni olish
+        const presentationData = JSON.parse(localStorage.getItem('presentationData')) || {};
+        const listCount = presentationData.list_count || 8;
+
+        // Sahifa yuklanganda
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('Sahifa yuklandi. Templates:', templates);
+            document.getElementById('list-count').textContent = listCount;
+            checkImagesExist();
+            renderTemplateOptions();
+            updatePreview();
+        });
+
+        // Rasmlar mavjudligini tekshirish
+        function checkImagesExist() {
+            Object.keys(templates).forEach(type => {
+                templates[type].forEach((template, index) => {
+                    const img = new Image();
+                    img.src = template.image_path; // To‘g‘ri yo‘l
+                    img.onerror = () => {
+                        console.warn(`${template.image_path} topilmadi, standart rasm ishlatiladi.`);
+                        template.image_path = '{% static "images/default_preview.jpg" %}';
+                    };
+                });
+            });
+        }
+
+        // Shablon turini o'zgartirish
+        function setTemplateType(type) {
+            selectedTemplateType = type;
+            selectedStyleIndex = 0;
+            document.querySelectorAll('.template-type-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.type === type);
+            });
+            renderTemplateOptions();
+            updatePreview();
+            document.getElementById('template_type').value = type;
+            document.getElementById('style_index').value = 0;
+        }
+
+        // Preview rasmini yangilash
+        function updatePreview() {
+            const selectedTemplate = templates[selectedTemplateType]?.[selectedStyleIndex];
+            const previewImage = document.getElementById('preview-image');
+            if (selectedTemplate && selectedTemplate.image_path) {
+                previewImage.src = selectedTemplate.image_path;
+            } else {
+                previewImage.src = '{% static "images/default_preview.jpg" %}';
+            }
+        }
+
+        // Shablon dizaynlarini ko‘rsatish
+        function renderTemplateOptions() {
+            const container = document.getElementById('template-options');
+            container.innerHTML = '';
+            if (!templates[selectedTemplateType] || templates[selectedTemplateType].length === 0) {
+                console.warn(`Shablonlar topilmadi: ${selectedTemplateType}`);
+                container.innerHTML = '<p>Shablonlar mavjud emas.</p>';
+                return;
+            }
+
+            templates[selectedTemplateType].forEach((template, index) => {
+                const div = document.createElement('div');
+                div.className = `template-option fade-in-up ${index === selectedStyleIndex ? 'selected' : ''}`;
+                div.style.animationDelay = `${index * 0.1}s`;
+                div.innerHTML = `
+                    <img src="${template.image_path}" alt="${template.name}" class="template-preview-img">
+                    <span class="template-name">${template.name}</span>
+                `;
+                div.onclick = () => {
+                    selectedStyleIndex = index;
+                    document.getElementById('style_index').value = index;
+                    renderTemplateOptions();
+                    updatePreview();
+                };
+                container.appendChild(div);
+            });
+        }
+
+        // Formani yuborish
+        async function handleSubmit(event) {
+            event.preventDefault();
+            if (loading) return;
+
+            loading = true;
+            const submitBtn = document.getElementById('create-presentation-btn');
+            const loadingOverlay = document.getElementById('loading-overlay');
+            submitBtn.querySelector('.button-text').classList.add('d-none');
+            submitBtn.querySelector('.loading-spinner').classList.remove('d-none');
+            loadingOverlay.classList.remove('d-none');
+
+            const formData = new FormData();
+            formData.append('template_type', selectedTemplateType);
+            formData.append('style_index', selectedStyleIndex);
+            formData.append('csrfmiddlewaretoken', getCsrfToken());
+
+            try {
+                const response = await fetch('/presentations/select-template/', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRFToken': getCsrfToken(),
+                    },
+                });
+                const data = await response.json();
+                if (data.error) {
+                    showError(data.error);
+                } else {
+                    window.location.href = data.redirect_url;
+                }
+            } catch (err) {
+                showError('Taqdimot yaratishda xato yuz berdi.');
+                console.error('Xato:', err);
+            } finally {
+                loading = false;
+                submitBtn.querySelector('.button-text').classList.remove('d-none');
+                submitBtn.querySelector('.loading-spinner').classList.add('d-none');
+                loadingOverlay.classList.add('d-none');
+            }
+        }
+
+        // Xato xabarini ko‘rsatish
+        function showError(message) {
+            const errorContainer = document.getElementById('error-container');
+            const errorMessage = document.getElementById('error-message');
+            errorMessage.textContent = message;
+            errorContainer.classList.remove('d-none');
+            setTimeout(() => {
+                errorContainer.classList.add('d-none');
+            }, 5000);
+        }
+
+        // CSRF tokenini olish
+        function getCsrfToken() {
+            const name = 'csrftoken';
+            const cookies = document.cookie.split(';');
+            for (let cookie of cookies) {
+                cookie = cookie.trim();
+                if (cookie.startsWith(name + '=')) {
+                    return cookie.substring(name.length + 1);
+                }
+            }
+            console.error('CSRF token topilmadi!');
+            return '';
+        }
+    </script>
+    <!-- CSS havolasi -->
+    <link rel="stylesheet" href="{% static 'presentations/select_template.css' %}">
+{% endblock %}

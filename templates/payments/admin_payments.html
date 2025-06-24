@@ -1,0 +1,34 @@
+{% extends "authenticated_base.html" %}
+
+{% block title %}To‘lov So‘rovlari{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="text-center">📜 To‘lov So‘rovlari</h2>
+    <table class="table table-bordered mt-3">
+        <thead>
+            <tr>
+                <th>Foydalanuvchi</th>
+                <th>Miqdor</th>
+                <th>Chek</th>
+                <th>Harakatlar</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for payment in payments %}
+                <tr>
+                    <td>{{ payment.user.username }}</td>
+                    <td>${{ payment.amount }}</td>
+                    <td><a href="{{ payment.receipt.url }}" target="_blank">📄 Ko‘rish</a></td>
+                    <td>
+                        <a href="{% url 'approve_payment' payment.id %}" class="btn btn-success btn-sm">✅ Tasdiqlash</a>
+                        <a href="{% url 'reject_payment' payment.id %}" class="btn btn-danger btn-sm">❌ Rad etish</a>
+                    </td>
+                </tr>
+            {% empty %}
+                <tr><td colspan="4" class="text-center">🚫 Hozircha so‘rov yo‘q.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

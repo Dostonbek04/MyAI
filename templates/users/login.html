@@ -1,0 +1,269 @@
+{% extends 'base.html' %}
+
+{% block title %}Kirish - PresentlyAI{% endblock %}
+
+{% load static %}
+
+{% block content %}
+<div class="container d-flex justify-content-center align-items-center min-vh-80">
+    <div class="col-md-5">
+        <div class="card shadow-lg rounded-lg fade-in">
+            <div class="card-header text-center py-4">
+                <h3 class="card-title fw-bold">
+                    <i class="fa-solid fa-right-to-bracket me-2"></i>Hisobingizga kiring
+                </h3>
+            </div>
+            <div class="card-body p-4">
+                <!-- Xatolik xabarlari -->
+                {% if form.errors %}
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="fa-solid fa-exclamation-triangle me-2"></i>Foydalanuvchi nomi yoki parol noto‘g‘ri. Iltimos, qayta urinib ko‘ring.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endif %}
+
+                <!-- Kirish formasi -->
+                <form method="post" action="{% url 'users:login' %}">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">
+                            <i class="fa-solid fa-user me-2"></i>Foydalanuvchi nomi
+                        </label>
+                        <input type="text" name="username" class="form-control" placeholder="Username" required>
+                    </div>
+                    <div class="mb-3 position-relative">
+                        <label class="form-label fw-bold">
+                            <i class="fa-solid fa-lock me-2"></i>Parol
+                        </label>
+                        <div class="input-group">
+                            <input type="password" name="password" id="password" class="form-control" placeholder="*******" required>
+                            <button class="btn btn-outline-secondary toggle-password" type="button" id="togglePassword">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100 custom-btn">
+                        <i class="fa-solid fa-rocket me-2"></i>Kirish
+                    </button>
+                </form>
+
+                <!-- Parolni unutdingizmi? va Ro‘yxatdan o‘tish -->
+                <div class="text-center mt-3">
+                    <a href="{% url 'users:password_reset' %}" class="text-muted reset-link">
+                        <i class="fa-solid fa-rotate me-1"></i>Parolni unutdingizmi?
+                    </a>
+                    <p class="mt-2">Yangi foydalanuvchimisiz?
+                        <a href="{% url 'users:register' %}" class="register-link">Ro‘yxatdan o‘ting</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const togglePasswordBtn = document.getElementById("togglePassword");
+    const passwordField = document.getElementById("password");
+    const toggleIcon = togglePasswordBtn.querySelector("i");
+
+    togglePasswordBtn.addEventListener("click", function () {
+        const type = passwordField.type === "password" ? "text" : "password";
+        passwordField.type = type;
+        toggleIcon.classList.toggle("fa-eye");
+        toggleIcon.classList.toggle("fa-eye-slash");
+    });
+});
+</script>
+
+<style>
+/* Rejimlar uchun o‘zgaruvchanlar */
+:root {
+    /* Light rejim uchun o‘zgaruvchanlar (default) */
+    --background-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    --card-bg: #ffffff;
+    --card-header-bg: linear-gradient(90deg, #007bff, #00c4ff);
+    --text-color: #333333;
+    --text-muted: #6c757d;
+    --input-bg: #f8f9fa;
+    --input-border: #ced4da;
+    --primary-gradient: linear-gradient(135deg, #007bff, #0056b3);
+    --primary-gradient-hover: linear-gradient(135deg, #0056b3, #003f80);
+    --secondary-gradient: linear-gradient(135deg, #6c757d, #5a6268);
+    --shadow-color: rgba(0, 0, 0, 0.1);
+    --alert-bg: #f8d7da;
+    --alert-text: #721c24;
+    --link-color: #007bff;
+    --link-hover: #0056b3;
+}
+
+/* Dark rejim uchun o‘zgaruvchanlar */
+[data-theme="dark"] {
+    --background-gradient: linear-gradient(135deg, #1f2a44 0%, #3b4371 100%);
+    --card-bg: #2c2f3a;
+    --card-header-bg: linear-gradient(90deg, #1e90ff, #00c4ff);
+    --text-color: #e0e0e0;
+    --text-muted: #a0a0a0;
+    --input-bg: #3b3e4a;
+    --input-border: #5a5d6a;
+    --primary-gradient: linear-gradient(135deg, #1e90ff, #1c75d1);
+    --primary-gradient-hover: linear-gradient(135deg, #1c75d1, #155fa0);
+    --secondary-gradient: linear-gradient(135deg, #5a6268, #4b5257);
+    --shadow-color: rgba(0, 0, 0, 0.3);
+    --alert-bg: #4a2c2e;
+    --alert-text: #f5c6cb;
+    --link-color: #1e90ff;
+    --link-hover: #1c75d1;
+}
+
+/* Umumiy uslublar */
+.min-vh-80 {
+    min-height: 80vh;
+}
+
+.card {
+    background: var(--card-bg) !important;
+    border-radius: 20px !important;
+    box-shadow: 0 8px 20px var(--shadow-color) !important;
+    transition: transform 0.3s ease-in-out;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.card-header {
+    background: var(--card-header-bg) !important;
+    border-top-left-radius: 20px !important;
+    border-top-right-radius: 20px !important;
+    color: #ffffff !important;
+}
+
+/* Matn va ikonka ranglari */
+h3, .form-label, .fa-solid {
+    color: var(--text-color) !important;
+}
+
+.text-muted {
+    color: var(--text-muted) !important;
+}
+
+/* Input maydonlari */
+.form-control {
+    background: var(--input-bg) !important;
+    border: 1px solid var(--input-border) !important;
+    color: var(--text-color) !important;
+    border-radius: 10px !important;
+    padding: 10px !important;
+    transition: all 0.3s ease-in-out;
+}
+
+.form-control:focus {
+    border-color: var(--link-color) !important;
+    box-shadow: 0 0 8px rgba(0, 123, 255, 0.3) !important;
+    outline: none !important;
+    background: var(--input-bg) !important;
+}
+
+.input-group .btn-outline-secondary {
+    border-color: var(--input-border);
+    background: var(--input-bg);
+    color: var(--text-color);
+    transition: all 0.3s ease-in-out;
+}
+
+.input-group .btn-outline-secondary:hover {
+    background: var(--link-color);
+    color: #ffffff;
+}
+
+/* Tugmalar */
+.custom-btn {
+    background: var(--primary-gradient) !important;
+    color: #ffffff !important;
+    font-weight: bold;
+    padding: 12px 24px;
+    border-radius: 30px;
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0 4px 10px var(--shadow-color);
+    border: none;
+}
+
+.custom-btn:hover {
+    background: var(--primary-gradient-hover) !important;
+    transform: scale(1.05);
+    box-shadow: 0 6px 15px var(--shadow-color);
+}
+
+/* Xatolik xabarlari */
+.alert-danger {
+    background: var(--alert-bg) !important;
+    color: var(--alert-text) !important;
+    border-radius: 10px;
+    border: none;
+}
+
+/* Havolalar */
+.reset-link, .register-link {
+    transition: color 0.3s ease-in-out;
+}
+
+.reset-link {
+    color: var(--text-muted) !important;
+}
+
+.reset-link:hover {
+    color: var(--link-color) !important;
+}
+
+.register-link {
+    color: var(--link-color) !important;
+    font-weight: 500;
+}
+
+.register-link:hover {
+    color: var(--link-hover) !important;
+    text-decoration: underline !important;
+}
+
+/* Animatsiyalar */
+.fade-in {
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Mobil moslashuvi */
+@media (max-width: 576px) {
+    .card {
+        padding: 1rem !important;
+    }
+
+    .card-header {
+        padding: 1.5rem !important;
+    }
+
+    h3 {
+        font-size: 1.5rem !important;
+    }
+
+    .form-label {
+        font-size: 0.9rem !important;
+    }
+
+    .custom-btn {
+        padding: 10px 20px !important;
+        font-size: 1rem !important;
+    }
+}
+</style>
+{% endblock %}

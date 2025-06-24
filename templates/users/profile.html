@@ -1,0 +1,709 @@
+{% extends 'authenticated_base.html' %}
+
+{% block title %}Profil - PresentlyAI{% endblock %}
+{% load static %}
+
+{% block content %}
+<!-- CSS faylini ulash -->
+<link rel="stylesheet" href="{% static 'profile/style.css' %}">
+<!-- FontAwesome CSS (bildirishnoma ikonkasi uchun) -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+<div class="d-flex">
+    <!-- Chap menyu (butunlay chapni egallaydi) -->
+    <div class="sidebar border-end vh-100 position-fixed d-md-block collapse" id="sidebarMenu" style="width: 250px; z-index: 1000;">
+        <div class="p-4 text-center">
+            <img
+                src="{% if user.profile.image.url %}{{ user.profile.image.url }}{% else %}{{ '/media/default/default_profile.png' }}{% endif %}"
+                alt="Profil rasmi"
+                class="rounded-circle mb-3"
+                width="80"
+                height="80"
+            >
+            <h4 class="fw-bold">{{ user.username }}</h4>
+            <p class="text-muted">{{ user.email }}</p>
+            <a href="{% url 'users:edit_profile' %}" class="btn btn-primary w-100 mt-2">Profilni tahrirlash</a>
+        </div>
+        <div class="list-group list-group-flush">
+            <a href="#" class="list-group-item list-group-item-action" data-bs-toggle="modal" data-bs-target="#settingsModal">Sozlamalar</a>
+            <a href="#" class="list-group-item list-group-item-action">Xavfsizlik</a>
+            <a href="#" class="list-group-item list-group-item-action">Yordam</a>
+            <a href="{% url 'payments:profile_payments' %}" class="list-group-item list-group-item-action">To'lov Tarixi</a>
+            <a href="{% url 'feedback:feedback_view' %}" class="list-group-item list-group-item-action">Fikrlar</a>
+            <a href="{% url 'privacy_policy' %}" class="list-group-item list-group-item-action">Maxfiylik Siyosati</a>
+            <a href="{% url 'terms' %}" class="list-group-item list-group-item-action">Foydalanish Shartlari</a>
+            <!-- Email tasdiqlash havolasi (faqat tasdiqlanmagan bo‘lsa ko‘rinadi) -->
+            {% if not user.is_email_verified %}
+                <a href="{% url 'users:resend_verification_email' %}" class="list-group-item list-group-item-action text-primary" id="verifyEmailTrigger">
+                    <i class="fa-solid fa-envelope me-1"></i> Emailni tasdiqlash
+                </a>
+            {% endif %}
+            <!-- Logout -->
+            <form id="logout-form" action="{% url 'logout' %}" method="post" class="list-group-item list-group-item-action">
+                {% csrf_token %}
+                <a href="#" onclick="document.getElementById('logout-form').submit();" class="text-decoration-none text-danger">
+                    <i class="fa-solid fa-right-from-bracket"></i> Akkauntdan Chiqish
+                </a>
+            </form>
+        </div>
+    </div>
+
+    <!-- Asosiy kontent (o‘ng qism) -->
+    <div class="main-content flex-grow-1" style="margin-left: 250px; padding: 20px;">
+        <!-- Yuqori qism: Sayt nomi, Balans, Email tasdiqlash, Bildirishnoma va Yangi Taqdimot tugmasi -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div class="d-flex align-items-center">
+                <!-- Hamburger menyusi (mobil uchun) -->
+                <button class="navbar-toggler d-md-none me-3" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon">
+                        <span class="line line-1"></span>
+                        <span class="line line-2"></span>
+                        <span class="line line-3"></span>
+                    </span>
+                </button>
+                <!-- Sayt nomi -->
+                <h2 class="main fw-bold mb-0">PresentlyAI</h2>
+            </div>
+            <div class="d-flex align-items-center gap-3">
+                <!-- Balans va To'lov qilish -->
+                <div class="d-flex align-items-center gap-2">
+                    <div class="d-none d-md-flex align-items-center" data-bs-toggle="tooltip" data-bs-placement="top" title="Balans">
+                        <i class="fa-solid fa-wallet text-success me-1"></i>
+                        <span class="fw-bold text-success">Balans: ${{ balance }}</span>
+                    </div>
+                    <div class="d-flex d-md-none align-items-center" data-bs-toggle="tooltip" data-bs-placement="top" title="Balans: ${{ balance }}">
+                        <i class="fa-solid fa-wallet text-success me-1"></i>
+                        <span class="fw-bold text-success">${{ balance }}</span>
+                    </div>
+                    <a href="{% url 'payments:request_payment' %}" class="btn btn-success btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" title="To'lov qilish">
+                        <i class="fa-solid fa-credit-card"></i>
+                    </a>
+                </div>
+                <!-- Email tasdiqlash holati -->
+                <div class="d-flex align-items-center">
+                    {% if user.is_email_verified %}
+                        <div class="d-none d-md-flex align-items-center" data-bs-toggle="tooltip" data-bs-placement="top" title="Email tasdiqlangan">
+                            <i class="fa-solid fa-check-circle text-success me-1"></i>
+                            <span class="text-success">Email tasdiqlangan</span>
+                        </div>
+                        <div class="d-flex d-md-none align-items-center" data-bs-toggle="tooltip" data-bs-placement="top" title="Email tasdiqlangan">
+                            <i class="fa-solid fa-check-circle text-success"></i>
+                        </div>
+                    {% else %}
+                        <div class="d-none d-md-flex align-items-center" data-bs-toggle="tooltip" data-bs-placement="top" title="Email tasdiqlanmagan">
+                            <i class="fa-solid fa-times-circle text-danger me-1"></i>
+                            <span class="text-danger">Email tasdiqlanmagan</span>
+                        </div>
+                        <div class="d-flex d-md-none align-items-center" data-bs-toggle="tooltip" data-bs-placement="top" title="Email tasdiqlanmagan">
+                            <a href="{% url 'users:resend_verification_email' %}" id="verifyEmailTriggerMobile">
+                                <i class="fa-solid fa-times-circle text-danger"></i>
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+                <!-- Bildirishnoma ikonkasi -->
+                <div class="d-flex align-items-center position-relative notification-container">
+                    <i class="fas fa-bell fa-lg" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#notificationsModal" data-bs-toggle="tooltip" data-bs-placement="top" title="Bildirishnomalar"></i>
+                    <span id="notificationCount" class="badge badge-danger position-absolute" style="top: -15px; right: -10px;">0</span>
+                </div>
+                <form action="{% url 'presentations:create_presentation' %}" method="POST" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-primary btn-sm">
+                    <span class="d-none d-md-inline">Yangi Taqdimot Yaratish</span>
+                    <span class="d-md-none">Yaratish</span>
+                </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Bildirishnoma Modal oyna -->
+        <div class="modal fade notification-modal" id="notificationsModal" tabindex="-1" aria-labelledby="notificationsModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="notificationsModalLabel">Bildirishnomalar</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body" id="notificationsBody">
+                        <p>Hozircha yangi bildirishnomalar yo‘q.</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Yopish</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Yuqori qism va taqdimotlar o‘rtasidagi chiziq -->
+        <hr class="my-4 border-2 border-primary">
+
+        <!-- Mening Taqdimotlarim -->
+        <div class="card border-0 rounded-lg">
+            <div class="card-body d-flex flex-column">
+                <!-- Qidiruv bo‘limi -->
+                <div class="mb-4">
+                    <div class="input-group">
+                        <input type="text" id="searchInput" class="form-control" placeholder="Taqdimot sarlavhasini qidiring..." oninput="searchPresentations()" aria-label="Qidiruv">
+                        <span class="input-group-text">
+                            <i class="fa-solid fa-search"></i>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Taqdimotlar ro‘yxati (scrollable konteyner) -->
+                <div class="presentations-container flex-grow-1" style="overflow-y: auto;">
+                    <div class="row" id="presentationsList">
+                        {% for presentation in presentations %}
+                            <div class="col-md-3 col-sm-6 mb-4 presentation-item" data-presentation-id="{{ presentation.id }}">
+                                <div class="card presentation-card shadow-lg border-0 rounded-lg">
+                                    <!-- Taqdimotning birinchi varag'i rasmi -->
+                                    <div class="card-img-top text-center">
+                                        <img
+                                            src="{% if presentation.preview_image %}{{ presentation.preview_image.url }}{% else %}/media/default/default_presentation_preview.png{% endif %}"
+                                            alt="{{ presentation.title }} birinchi varag'i"
+                                            class="img-fluid rounded-top"
+                                            style="max-height: 140px; object-fit: cover;"
+                                        >
+                                    </div>
+                                    <!-- Sarlavha rasm tagida -->
+                                    <div class="card-body text-center py-2">
+                                        <h5 class="card-title fw-bold mb-0 presentation-title" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ presentation.title }}">
+                                            {{ presentation.title }}
+                                        </h5>
+                                        <p class="text-muted mb-1">Yaratilgan: {{ presentation.created_at|date:"Y-m-d H:i" }}</p>
+                                        <p class="text-muted mb-1">Egasi: {{ presentation.user.username }}</p>
+                                        {% if presentation.updated_at %}
+                                            <p class="text-muted mb-1">🔄 Tahrir: {{ presentation.updated_at|date:"Y-m-d H:i" }}</p>
+                                        {% endif %}
+                                        <hr class="my-2">
+
+                                        <!-- Tugmalar -->
+                                        <div class="d-flex justify-content-center flex-wrap gap-2 mb-2">
+                                            <a href="{% url 'presentations:edit_presentation' presentation.id %}" class="btn btn-outline-info btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" title="Ko‘rish">
+                                                <i class="fa-solid fa-eye"></i>
+                                            </a>
+                                            {% if presentation.file %}
+                                                <a href="{{ presentation.file.url }}" class="btn btn-outline-primary btn-sm" download data-bs-toggle="tooltip" data-bs-placement="top" title="Yuklab olish">
+                                                    <i class="fa-solid fa-download"></i>
+                                                </a>
+                                            {% else %}
+                                                <button class="btn btn-outline-secondary btn-sm" disabled data-bs-toggle="tooltip" data-bs-placement="top" title="Fayl mavjud emas">
+                                                    <i class="fa-solid fa-download"></i>
+                                                </button>
+                                            {% endif %}
+                                            {% if presentation.dropbox_url %}
+                                                <a href="{{ presentation.dropbox_url }}" class="btn btn-outline-success btn-sm" target="_blank" data-bs-toggle="tooltip" data-bs-placement="top" title="Dropbox">
+                                                    <i class="fa-solid fa-cloud-arrow-down"></i>
+                                                </a>
+                                            {% endif %}
+                                            <!-- O‘chirish tugmasi -->
+                                            <a href="{% url 'presentations:delete_presentation' presentation.id %}" class="btn btn-sm btn-danger delete-presentation-btn" data-bs-toggle="tooltip" data-bs-placement="top" title="O‘chirish">
+                                                <i class="fa-solid fa-trash"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% empty %}
+                            <div class="col-12 text-center py-4">
+                                <p class="text-muted">📌 Siz hali taqdimot yaratmagansiz.</p>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal oyna - Email tasdiqlash kodi uchun -->
+<div class="modal fade verify-email-modal" id="verifyEmailModal" tabindex="-1" aria-labelledby="verifyEmailModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="verifyEmailModalLabel">Emailni tasdiqlash</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Emailingizga yuborilgan 6 xonali kodni kiriting:</p>
+                <button id="sendCodeButton" class="btn btn-primary w-100 mb-3">Email tasdiqlash kodi yuborish</button>
+                <form id="verifyCodeForm" method="POST" action="{% url 'users:verify_code' %}">
+                    {% csrf_token %}
+                    <div class="mb-3 text-center">
+                        <input type="text" class="form-control verify-code-input" name="code" id="verificationCode" maxlength="6" placeholder="123456" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Tasdiqlash</button>
+                </form>
+                <p class="mt-3 text-center">
+                    Kod kelmadi? <a href="{% url 'users:resend_verification_email' %}" class="text-primary" id="resendCodeTrigger" style="display: none;">Qayta yuborish</a>
+                </p>
+                <div id="resendTimerDisplay" class="text-center text-muted mt-2"></div>
+                <div id="timerDisplay" class="text-center text-muted mt-2"></div>
+                <div id="messageArea" class="text-center mt-3"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Feedback Modal oyna -->
+<div class="modal fade feedback-modal" id="feedbackModal" tabindex="-1" aria-labelledby="feedbackModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="feedbackModalLabel">Fikr qoldirasizmi?</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Siz {{ presentations|length }} ta taqdimot yaratdingiz! Bizga fikr qoldirib, xizmatimizni yaxshilashga yordam bera olasiz.
+            </div>
+            <div class="modal-footer">
+                <a href="{% url 'feedback:feedback_view' %}" class="btn btn-primary">Ha</a>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="setFeedbackLater()">Yo'q</button>
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" onclick="setFeedbackLater()">Keyinroq</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Sozlamalar Modal oyna -->
+<div class="modal fade settings-modal" id="settingsModal" tabindex="-1" aria-labelledby="settingsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="settingsModalLabel">Sozlamalar</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Bildirishnoma sozlamalari -->
+                <div class="mb-4">
+                    <h6 class="mb-3">Bildirishnoma sozlamalari</h6>
+                    <div class="form-check form-switch mb-2">
+                        <input class="form-check-input" type="checkbox" id="emailNotifications" {% if user.profile.email_notifications %}checked{% endif %}>
+                        <label class="form-check-label" for="emailNotifications">Email bildirishnomalari</label>
+                    </div>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="systemNotifications" {% if user.profile.system_notifications %}checked{% endif %}>
+                        <label class="form-check-label" for="systemNotifications">Tizim ichidagi bildirishnomalar</label>
+                    </div>
+                </div>
+                <!-- Parolni o‘zgartirish -->
+                <div class="mb-4">
+                    <h6 class="mb-3">Xavfsizlik</h6>
+                    <a href="{% url 'users:change_password' %}" class="btn btn-outline-primary w-100">Parolni o‘zgartirish</a>
+                </div>
+                <!-- Profilni o‘chirish -->
+                <div class="mb-4">
+                    <h6 class="mb-3">Profilni o‘chirish</h6>
+                    <button class="btn btn-danger w-100" onclick="deleteProfile()">Profilni o‘chirish</button>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Bekor qilish</button>
+                <button type="button" class="btn btn-primary" onclick="saveSettings()">Saqlash</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript Modal, Tooltip, Qidiruv va O‘chirish uchun -->
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    // CSRF tokenni cookie'dan olish
+    const getCookie = (name) => {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        console.log('CSRF Token:', cookieValue); // Debug
+        return cookieValue;
+    };
+
+    const csrfToken = getCookie('csrftoken');
+
+    // Elementlarni aniqlash
+    const elements = {
+        verifyEmailTrigger: document.getElementById('verifyEmailTrigger'),
+        verifyEmailTriggerMobile: document.getElementById('verifyEmailTriggerMobile'),
+        verifyEmailModal: document.getElementById('verifyEmailModal'),
+        sendCodeButton: document.getElementById('sendCodeButton'),
+        resendCodeTrigger: document.getElementById('resendCodeTrigger'),
+        verifyCodeForm: document.getElementById('verifyCodeForm'),
+        verificationCodeInput: document.getElementById('verificationCode'),
+        messageArea: document.getElementById('messageArea'),
+        timerDisplay: document.getElementById('timerDisplay'),
+        resendTimerDisplay: document.getElementById('resendTimerDisplay'),
+        notificationsModal: document.getElementById('notificationsModal'),
+        notificationsBody: document.getElementById('notificationsBody'),
+        notificationCount: document.getElementById('notificationCount'),
+        searchInput: document.getElementById('searchInput'),
+        feedbackModal: document.getElementById('feedbackModal'),
+        emailNotifications: document.getElementById('emailNotifications'),
+        systemNotifications: document.getElementById('systemNotifications'),
+        settingsModal: document.getElementById('settingsModal')
+    };
+
+    console.log('Elementlar aniqlandi:', elements); // Debug
+
+    let verificationTimer = null;
+    let resendTimer = null;
+
+    // Modalni boshqarish
+    const verifyEmailModalInstance = new bootstrap.Modal(elements.verifyEmailModal, {
+        backdrop: 'static',
+        keyboard: false
+    });
+    const feedbackModalInstance = new bootstrap.Modal(elements.feedbackModal, {
+        backdrop: 'static',
+        keyboard: false
+    });
+
+    // Fetch so‘rovlarini boshqarish
+    const makeFetchRequest = async (url, method = 'GET', body = null, includeCsrf = false) => {
+        const headers = { 'X-Requested-With': 'XMLHttpRequest' };
+        if (includeCsrf && csrfToken) {
+            headers['X-CSRFToken'] = csrfToken;
+        }
+        if (body && method === 'POST') {
+            if (body instanceof FormData) {
+                // FormData uchun Content-Type avtomatik boshqariladi
+            } else {
+                headers['Content-Type'] = 'application/x-www-form-urlencoded';
+            }
+        }
+        console.log('Fetch so‘rovi boshlandi:', { url, method, body }); // Debug
+        const options = { method, headers };
+        if (body) options.body = body;
+        const response = await fetch(url, options);
+        if (!response.ok) throw new Error(`HTTP xatosi: ${response.status} - ${response.statusText}`);
+        const data = await response.json();
+        console.log('Fetch javobi:', data); // Debug
+        return data;
+    };
+
+    // Email tasdiqlash tugmasi
+    [elements.verifyEmailTrigger, elements.verifyEmailTriggerMobile].forEach(trigger => {
+        if (trigger) {
+            trigger.addEventListener('click', (e) => {
+                e.preventDefault();
+                console.log('Email tasdiqlash triggeri bosildi'); // Debug
+                verifyEmailModalInstance.show();
+            });
+        }
+    });
+
+    // Modal ochilganda holatni sozlash
+    elements.verifyEmailModal?.addEventListener('shown.bs.modal', () => {
+        console.log('Modal ochildi'); // Debug
+        elements.messageArea.textContent = '';
+        elements.sendCodeButton.style.display = 'block';
+        elements.resendCodeTrigger.style.display = 'none';
+        elements.timerDisplay.textContent = '';
+        elements.resendTimerDisplay.textContent = '';
+        if (verificationTimer) clearInterval(verificationTimer);
+        if (resendTimer) clearInterval(resendTimer);
+    });
+
+    // Kod yuborish
+    elements.sendCodeButton?.addEventListener('click', async () => {
+        console.log('Kod yuborish tugmasi bosildi'); // Debug
+        try {
+            const data = await makeFetchRequest("{% url 'users:resend_verification_email' %}", 'POST', null, true);
+            elements.messageArea.textContent = data.message;
+            if (data.success) {
+                elements.sendCodeButton.style.display = 'none';
+                startVerificationTimer(900);
+                startResendCooldown(120);
+            }
+        } catch (error) {
+            console.error('Kod yuborishda xato:', error);
+            elements.messageArea.textContent = "Kod yuborishda xatolik yuz berdi.";
+        }
+    });
+
+    // Qayta yuborish
+    elements.resendCodeTrigger?.addEventListener('click', async (e) => {
+        e.preventDefault();
+        console.log('Qayta yuborish tugmasi bosildi'); // Debug
+        try {
+            const data = await makeFetchRequest(elements.resendCodeTrigger.href, 'POST', null, true);
+            elements.messageArea.textContent = data.message;
+            if (data.success) {
+                elements.resendCodeTrigger.style.display = 'none';
+                startVerificationTimer(900);
+                startResendCooldown(120);
+            } else if (data.reason === 'resend_cooldown') {
+                const remainingSeconds = parseInt(data.message.match(/\d+/)[0]);
+                startResendCooldown(remainingSeconds);
+            }
+        } catch (error) {
+            console.error('Qayta yuborishda xato:', error);
+            elements.messageArea.textContent = "Qayta yuborishda xatolik yuz berdi.";
+        }
+    });
+
+    // Kod tasdiqlash
+    elements.verifyCodeForm?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        console.log('Kod tasdiqlash formasi submit qilindi'); // Debug
+        const codeInput = elements.verificationCodeInput.value.trim();
+        console.log('Inputdan olingan kod:', codeInput); // Debug
+
+        if (!codeInput) {
+            elements.messageArea.textContent = "Iltimos, kodni kiriting.";
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('code', codeInput);
+
+        try {
+            const data = await makeFetchRequest(elements.verifyCodeForm.action, 'POST', formData, true);
+            elements.messageArea.textContent = data.message;
+            if (data.success) {
+                setTimeout(() => location.reload(), 2000);
+            }
+        } catch (error) {
+            console.error('Kod tasdiqlashda xato:', error);
+            elements.messageArea.textContent = `Kod tasdiqlashda xatolik yuz berdi: ${error.message}`;
+        }
+    });
+
+    // Faqat raqamlarni qabul qilish
+    elements.verificationCodeInput?.addEventListener('input', function() {
+        this.value = this.value.replace(/[^0-9]/g, '');
+        console.log('Inputdagi joriy qiymat:', this.value); // Debug
+    });
+
+    // Tasdiqlash taymeri
+    const startVerificationTimer = (seconds) => {
+        if (verificationTimer) clearInterval(verificationTimer);
+        let timeLeft = seconds;
+        console.log('Taymer boshlandi:', timeLeft); // Debug
+        elements.timerDisplay.textContent = `Kod muddati: ${Math.floor(timeLeft / 60)}:${timeLeft % 60 < 10 ? '0' : ''}${timeLeft % 60}`;
+
+        verificationTimer = setInterval(() => {
+            timeLeft--;
+            if (timeLeft <= 0) {
+                clearInterval(verificationTimer);
+                elements.timerDisplay.textContent = 'Kod muddati tugadi. Yangi kod so‘rang.';
+                elements.verifyCodeForm.querySelector('button[type="submit"]').disabled = true;
+            } else {
+                elements.timerDisplay.textContent = `Kod muddati: ${Math.floor(timeLeft / 60)}:${timeLeft % 60 < 10 ? '0' : ''}${timeLeft % 60}`;
+            }
+        }, 1000);
+    };
+
+    // Qayta yuborish taymeri
+    const startResendCooldown = (seconds) => {
+        if (resendTimer) clearInterval(resendTimer);
+        let timeLeft = seconds;
+        console.log('Qayta yuborish taymeri boshlandi:', timeLeft); // Debug
+        elements.resendTimerDisplay.textContent = `Qayta yuborish: ${Math.floor(timeLeft / 60)}:${timeLeft % 60 < 10 ? '0' : ''}${timeLeft % 60}`;
+        elements.resendCodeTrigger.style.display = 'none';
+
+        resendTimer = setInterval(() => {
+            timeLeft--;
+            if (timeLeft <= 0) {
+                clearInterval(resendTimer);
+                elements.resendCodeTrigger.style.display = 'inline';
+                elements.resendTimerDisplay.textContent = '';
+            } else {
+                elements.resendTimerDisplay.textContent = `Qayta yuborish: ${Math.floor(timeLeft / 60)}:${timeLeft % 60 < 10 ? '0' : ''}${timeLeft % 60}`;
+            }
+        }, 1000);
+    };
+
+    // Feedback modal
+    const presentationCount = {{ presentations|length }};
+    if (presentationCount > 0 && presentationCount % 5 === 0) {
+        const feedbackLater = localStorage.getItem('feedbackLater');
+        if (!feedbackLater) {
+            console.log('Feedback modal ochilmoqda'); // Debug
+            feedbackModalInstance.show();
+        }
+    }
+
+    // Tooltip'larni faollashtirish
+    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+    tooltipTriggerList.forEach(tooltipTriggerEl => {
+        console.log('Tooltip faollashtirildi:', tooltipTriggerEl); // Debug
+        new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+
+    // Taqdimotlar balandligini sozlash
+    const adjustPresentationsContainerHeight = () => {
+        const mainContent = document.querySelector('.main-content');
+        const presentationsContainer = document.querySelector('.presentations-container');
+        const headerSection = document.querySelector('.d-flex.justify-content-between');
+        const hrElement = document.querySelector('hr');
+        const searchSection = document.querySelector('.mb-4');
+
+        if (!mainContent || !presentationsContainer || !headerSection || !hrElement || !searchSection) {
+            console.log('Elementlardan biri topilmadi'); // Debug
+            return;
+        }
+
+        const windowHeight = window.innerHeight;
+        const headerHeight = headerSection.getBoundingClientRect().height;
+        const hrHeight = hrElement.getBoundingClientRect().height;
+        const searchHeight = searchSection.getBoundingClientRect().height;
+        const padding = 40;
+        const availableHeight = windowHeight - headerHeight - hrHeight - searchHeight - padding;
+        presentationsContainer.style.maxHeight = `${availableHeight}px`;
+        console.log('Konteyner balandligi sozlandi:', availableHeight); // Debug
+    };
+
+    adjustPresentationsContainerHeight();
+    window.addEventListener('resize', adjustPresentationsContainerHeight);
+
+    // Taqdimotlarni o‘chirish
+    const deleteButtons = document.querySelectorAll(".delete-presentation-btn");
+    deleteButtons.forEach(button => {
+        button.addEventListener("click", async (e) => {
+            e.preventDefault();
+            const presentationItem = button.closest(".presentation-item");
+            const deleteUrl = button.getAttribute("href");
+            console.log('O‘chirish tugmasi bosildi:', deleteUrl); // Debug
+
+            if (!confirm("Taqdimotni o‘chirishni tasdiqlaysizmi?")) return;
+
+            try {
+                const data = await makeFetchRequest(deleteUrl, 'POST', null, true);
+                if (data.success) {
+                    presentationItem.remove();
+                    alert(data.message);
+                } else {
+                    alert("Taqdimotni o‘chirishda xato yuz berdi!");
+                }
+            } catch (error) {
+                console.error("O‘chirishda xato:", error);
+                alert("Taqdimotni o‘chirishda xatolik yuz berdi!");
+            }
+        });
+    });
+
+    // Bildirishnomalarni olish
+    elements.notificationsModal?.addEventListener('shown.bs.modal', async () => {
+        console.log('Bildirishnoma modal ochildi'); // Debug
+        try {
+            const data = await makeFetchRequest("{% url 'users:get_notifications' %}");
+            if (data.notifications.length > 0) {
+                elements.notificationsBody.innerHTML = '';
+                data.notifications.forEach(notification => {
+                    const notificationItem = document.createElement('div');
+                    notificationItem.classList.add('notification-item', 'mb-2');
+                    notificationItem.innerHTML = `
+                        <p class="mb-1">${notification.message}</p>
+                        <small class="text-muted">${notification.created_at}</small>
+                        <hr class="my-1">
+                    `;
+                    elements.notificationsBody.appendChild(notificationItem);
+                });
+                elements.notificationCount.textContent = data.notifications.length;
+            } else {
+                elements.notificationsBody.innerHTML = '<p>Hozircha yangi bildirishnomalar yo‘q.</p>';
+                elements.notificationCount.textContent = '0';
+            }
+        } catch (error) {
+            console.error('Bildirishnoma yuklashda xato:', error);
+            elements.notificationsBody.innerHTML = '<p>Bildirishnomalarni yuklashda xato yuz berdi.</p>';
+        }
+    });
+
+    // Qidiruv funksiyasi
+    elements.searchInput?.addEventListener('input', () => {
+        const input = elements.searchInput.value.toLowerCase();
+        console.log('Qidiruv so‘zi:', input); // Debug
+        const presentationItems = document.getElementsByClassName('presentation-item');
+        Array.from(presentationItems).forEach(item => {
+            const title = item.querySelector('.presentation-title').innerText.toLowerCase();
+            item.style.display = title.includes(input) ? '' : 'none';
+        });
+    });
+
+    // /presentations/create/ so‘rovini POST qilish
+    const createPresentationLink = document.querySelector('a[href="/presentations/create/"]');
+    if (createPresentationLink) {
+        createPresentationLink.addEventListener('click', async (e) => {
+            e.preventDefault();
+            console.log('Prezentatsiya yaratish so‘rovi boshlandi'); // Debug
+            try {
+                const formData = new FormData();
+                // Agar biror input bo‘lsa, uni formData’ga qo‘shing
+                formData.append('topic', 'Default Topic'); // Placeholder, agar frontend’da input bo‘lsa o‘zgartiring
+                formData.append('subject', 'Default Subject');
+                formData.append('list_count', '8');
+                formData.append('with_images', 'false');
+
+                const data = await makeFetchRequest('/presentations/create/', 'POST', formData, true);
+                if (data.success) {
+                    console.log('Prezentatsiya yaratildi:', data); // Debug
+                    // Agar backend redirect qilsa, uni bu yerda qo‘llab-quvvatlang
+                    window.location.href = '/presentations/create/';
+                } else {
+                    alert("Prezentatsiya yaratishda xato: " + data.message);
+                }
+            } catch (error) {
+                console.error('Prezentatsiya yaratishda xato:', error);
+                alert("Prezentatsiya yaratishda xatolik yuz berdi!");
+            }
+        });
+    }
+});
+
+// Feedback modalni yashirish
+const setFeedbackLater = () => {
+    console.log('Feedback keyinroq yashirildi'); // Debug
+    localStorage.setItem('feedbackLater', 'true');
+};
+
+// Sozlamalarni saqlash
+const saveSettings = async () => {
+    console.log('Sozlamalar saqlanmoqda'); // Debug
+    const emailNotifications = elements.emailNotifications.checked;
+    const systemNotifications = elements.systemNotifications.checked;
+
+    try {
+        const data = await makeFetchRequest("{% url 'users:save_notification_settings' %}", 'POST', JSON.stringify({
+            email_notifications: emailNotifications,
+            system_notifications: systemNotifications
+        }), true);
+        if (data.success) {
+            alert(data.message);
+            bootstrap.Modal.getInstance(elements.settingsModal).hide();
+        } else {
+            alert("Sozlamalarni saqlashda xato yuz berdi!");
+        }
+    } catch (error) {
+        console.error('Sozlamalar saqlashda xato:', error);
+        alert("Sozlamalarni saqlashda xatolik yuz berdi!");
+    }
+};
+
+// Profilni o‘chirish
+const deleteProfile = async () => {
+    console.log('Profilni o‘chirish so‘raldi'); // Debug
+    if (!confirm("Haqiqatan ham profilingizni o‘chirishni xohlaysizmi? Bu amalni qaytarib bo‘lmaydi!")) return;
+
+    try {
+        const data = await makeFetchRequest("{% url 'users:delete_profile' %}", 'POST', null, true);
+        if (data.success) {
+            alert(data.message);
+            window.location.href = "{% url 'index' %}";
+        } else {
+            alert("Profilingizni o‘chirishda xato yuz berdi: " + data.message);
+        }
+    } catch (error) {
+        console.error('Profilni o‘chirishda xato:', error);
+        alert("Profilingizni o‘chirishda xatolik yuz berdi!");
+    }
+};
+</script>
+{% endblock %}
