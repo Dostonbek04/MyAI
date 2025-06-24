@@ -1,0 +1,152 @@
+2025-05-11 13:28:55,085 - presentations.views - DEBUG - select_template view ishga tushdi
+2025-05-11 13:28:55,125 - presentations.views - DEBUG - presentation_data: {'topic': 'arterial gepotenziya', 'subject': 'ichki kasilliklar', 'list_count': 8, 'with_images': False}
+2025-05-11 13:29:06,361 - presentations.views - DEBUG - select_template view ishga tushdi
+2025-05-11 13:29:06,571 - presentations.views - DEBUG - presentation_data: {'topic': 'arterial gepotenziya', 'subject': 'ichki kasilliklar', 'list_count': 8, 'with_images': False}
+2025-05-11 13:29:06,632 - presentations.views - DEBUG - POST so‘rov keldi
+2025-05-11 13:29:06,767 - presentations.views - INFO - Style index: 4, Template type: light
+2025-05-11 13:29:07,104 - presentations.views - DEBUG - titles: ['Arterial Gipotoniya: Kirish Muqaddimasi', '2. Sabablari va xavf omillari', "3. Diagnostika uslublari va tashxis qo'yish", "4. Gepotenzioning asoratlari va ta'siri", '5. Davolash strategiyalari va yondashuvlar', "6. Ovqatlanish va turmush tarzi o'zgarishlari", '7. Kuzatuv va profilaktika choralar', 'Xulosa']
+2025-05-11 13:29:07,228 - presentations.views - ERROR - Taqdimot yaratishda umumiy xato: Presentation() got unexpected keyword arguments: 'owner'
+Traceback (most recent call last):
+  File "D:\sayt-0.1\presentlyai\presentations\views.py", line 94, in select_template
+    presentation = Presentation(user=request.user, owner=request.user, title=topic)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\USER\AppData\Local\Programs\Python\Python311\Lib\site-packages\django\db\models\base.py", line 567, in __init__
+    raise TypeError(
+TypeError: Presentation() got unexpected keyword arguments: 'owner'
+
+2025-05-11 13:39:22,612 - presentations.views - DEBUG - select_template view ishga tushdi
+2025-05-11 13:39:22,624 - presentations.views - DEBUG - presentation_data: {'topic': 'arterial gepotenziya', 'subject': 'ichki kasilliklar', 'list_count': 8, 'with_images': False}
+2025-05-11 13:39:37,445 - presentations.views - DEBUG - select_template view ishga tushdi
+2025-05-11 13:39:37,447 - presentations.views - DEBUG - presentation_data: {'topic': 'arterial gepotenziya', 'subject': 'ichki kasilliklar', 'list_count': 8, 'with_images': False}
+2025-05-11 13:39:37,450 - presentations.views - DEBUG - POST so‘rov keldi
+2025-05-11 13:39:37,460 - presentations.views - INFO - Style index: 4, Template type: light
+2025-05-11 13:39:37,462 - presentations.views - DEBUG - titles: ['Arterial Gipotoniya: Kirish Muqaddimasi', '2. Sabablari va xavf omillari', "3. Diagnostika uslublari va tashxis qo'yish", "4. Gepotenzioning asoratlari va ta'siri", '5. Davolash strategiyalari va yondashuvlar', "6. Ovqatlanish va turmush tarzi o'zgarishlari", '7. Kuzatuv va profilaktika choralar', 'Xulosa']
+2025-05-11 13:39:37,467 - presentations.views - DEBUG - Presentation ob'ekti yaratildi
+2025-05-11 13:39:37,587 - presentations.views - DEBUG - Slide 0 uchun matn generatsiya qilinmoqda
+2025-05-11 13:49:49,146 - presentations.views - DEBUG - Slide 0 matni: Arterial gipotoniya, ya'ni qon bosimining me'yordan past bo'lishi, ichki kasalliklar sohasida tez-tez uchraydigan holatlardan biridir. Ushbu holat turli xil salbiy asoratlarga sabab bo'lishi mumkin, jumladan, miya va yurak qon aylanishining yetishmovchiligi kabi. Arterial gipotoniyaning sabablari turli xil bo'lib, ular orasida genetik moyillik, turli dori-darmonlar ta'siri, suvsizlanish va jismoniy faollikning yetishmasligi kabi omillar mavjud. Ushbu kasallikni aniqlash va davolashda aniq tashxis muhim ahamiyatga ega. Shuning uchun, bemorlarning o'z vaqtida tibbiy ko'rikdan o'tishi va zarurat tug'ilganda mutaxassislar bilan maslahatlashishi tavsiya etiladi.
+2025-05-11 13:49:49,146 - presentations.views - DEBUG - Slide 1 uchun matn generatsiya qilinmoqda
+2025-05-11 13:49:58,116 - presentations.views - DEBUG - Slide 1 matni: Arterial gepotenziya, ya'ni qon bosimining doimiy ravishda me'yoridan past bo'lishi turli sabablar va xavf omillari bilan bog‘liq. Asosiy sabablari orasida genetik moyillik, yuqori stress darajasi, noqulay ekologik sharoitlar, noto‘g‘ri ovqatlanish va jismoniy faollikning yetarli darajada bo‘lmasligi sanaladi. Shuningdek, ba'zi dorilar, jumladan yurak-qon tomir kasalliklari uchun buyuriladigan dori vositalari ham arterial gepotenziyaga olib kelishi mumkin. Yana bir muhim omil sifatida endokrin tizimining buzilishi, ayniqsa, gipotireoz kabi holatlar ko‘rsatiladi. Ushbu omillar insonning umumiy sog‘lig‘iga ta'sir qilib, turli asoratlarni keltirib chiqarishi mumkin.
+2025-05-11 13:49:58,123 - presentations.views - DEBUG - Slide 2 uchun matn generatsiya qilinmoqda
+2025-05-11 13:50:06,000 - presentations.views - DEBUG - Slide 2 matni: Arterial gepotenziya - bu qon bosimi me'yoridan past bo'lishi holatidir. Tashxis qo'yishda bir qator diagnostika uslublari qo'llaniladi. Avvalo, bemor tarixi va shikoyatlari diqqat bilan o'rganiladi. Keyin, qon bosimini bir necha marta turli vaqtlarda o'lchash orqali gepotenziya mavjudligi aniqlanadi. Shuningdek, laboratoriya testlari va EKG kabi qo'shimcha tekshiruvlar bemorning umumiy holatini baholash uchun zarur bo'lishi mumkin. Bu jarayonlar orqali arterial gepotenziyaning sabablari va darajasi aniqlanadi, bu esa samarali davolash rejasini tuzish imkonini beradi.
+2025-05-11 13:50:06,001 - presentations.views - DEBUG - Slide 3 uchun matn generatsiya qilinmoqda
+2025-05-11 13:50:14,807 - presentations.views - DEBUG - Slide 3 matni: Arterial gepotenzioning asoratlari va ta'siri jiddiy e’tiborni talab qiladi. Gepotenzioning eng keng tarqalgan asoratlaridan biri - miya qon aylanishining buzilishi hisoblanadi, bu esa bosh aylanishi, holsizlik va hatto hushdan ketish holatlariga olib kelishi mumkin. Bundan tashqari, doimiy arterial gepotenzion yurak-qon tomir tizimining boshqa muammolariga, jumladan yurak ishemik kasalligiga sabab bo‘lishi mumkin. Ushbu holatlar organizmning umumiy holatiga salbiy ta'sir ko‘rsatadi va bemorning hayot sifatini sezilarli darajada pasaytiradi. Shuning uchun gepotenzioning oldini olish va uni samarali davolash ichki kasalliklar sohasidagi muhim vazifalardan biri hisoblanadi.
+2025-05-11 13:50:14,840 - presentations.views - DEBUG - Slide 4 uchun matn generatsiya qilinmoqda
+2025-05-11 13:50:25,453 - presentations.views - DEBUG - Slide 4 matni: Arterial gepotenzioning davolash strategiyalari va yondashuvlari xastalikning sabablariga qarab belgilanadi. Asosiy maqsad arterial bosimni normallashtirish va gepotenzion holatlarning salbiy oqibatlarini kamaytirishdir. Davolash rejasiga turli farmakologik preparatlar, jumladan, vazopressorlar va mineralokortikoidlar kiritilishi mumkin. Shuningdek, bemorlarga suv va tuz iste'molini oshirish, muntazam fizik mashqlar va ortostatik gepotenzionni oldini olish uchun maxsus mashqlar tavsiya etiladi. Har bir bemor uchun individual yondashuv muhimdir, chunki davolash samaradorligi bemorning umumiy holati va gepotenzioning asosiy sabablariga bog‘liq. Shu bilan birga, doimiy tibbiy kuzatuv va davolashning samaradorligini baholash zarur.
+2025-05-11 13:50:25,454 - presentations.views - DEBUG - Slide 5 uchun matn generatsiya qilinmoqda
+2025-05-11 13:50:32,953 - presentations.views - DEBUG - Slide 5 matni: Arterial gepotenziya - bu qon bosimining doimiy ravishda me'yoridan past bo'lishi holatidir. Ushbu holatni boshqarishda ovqatlanish va turmush tarzi muhim rol o'ynaydi. Sog'lom ovqatlanish, jumladan, meva va sabzavotlarni ko'proq iste'mol qilish, yog'li va qovurilgan ovqatlardan qochish, shuningdek, muntazam jismoniy mashqlar arterial qon bosimini me'yorlashga yordam beradi. Nikotin va alkogoldan voz kechish ham muhimdir. Bundan tashqari, stressni boshqarish va yetarli darajada uxlash arterial gepotenziyaning oldini olish va uni boshqarishda asosiy omillardir. Ushbu o'zgarishlar arterial gepotenziyani boshqarishda samarali bo'lishi mumkin.
+2025-05-11 13:50:32,956 - presentations.views - DEBUG - Slide 6 uchun matn generatsiya qilinmoqda
+2025-05-11 13:50:43,899 - presentations.views - DEBUG - Slide 6 matni: Arterial gepotenziya - bu qon bosimi me'yoridan past bo'lgan holatdir. Bu kasallikning oldini olish va uni kuzatib borish uchun turli profilaktika choralarini ko'rish muhimdir. Bunga sababli turmush tarzini sog'lomlashtirish, muntazam jismoniy mashqlar, to'g'ri ovqatlanish, stressni boshqarish va yetarli darajada uyqu zarur. Shuningdek, doimiy tibbiy kuzatuv va zarurat tug'ilganda, shifokor ko'rsatmasiga asosan dori-darmonlar qabul qilish muhim ahamiyatga ega. Arterial gepotenziyani jiddiy qabul qilish va uning oldini olish choralarini muntazam amalga oshirish, kasallikning salbiy oqibatlarini kamaytirishga yordam beradi.
+2025-05-11 13:50:43,901 - presentations.views - DEBUG - Xulosa matni generatsiya qilinmoqda
+2025-05-11 13:50:50,034 - presentations.views - DEBUG - Xulosa matni: Arterial gipotoniya - ichki kasalliklar sohasida tez-tez uchraydigan, qon bosimining me'yordan past bo'lishi holati bo'lib, turli salbiy asoratlarga sabab bo'lishi mumkin. Uning sabablari va xavf omillari orasida genetik moyillik, stress, noto'g'ri ovqatlanish kabi omillar mavjud. Tashxis va davolashda individual yondashuv muhim, shuningdek, turmush tarzi o'zgarishlari va profilaktika choralarini amalga oshirish kasallikning salbiy oqibatlarini kamaytirishga yordam beradi.
+2025-05-11 13:50:50,037 - presentations.views - DEBUG - image_paths: [None, None, None, None, None, None, None, None]
+2025-05-11 13:50:50,038 - presentations.views - DEBUG - Shablon yaratilmoqda
+2025-05-11 13:50:50,327 - presentations.views - DEBUG - PPT fayli saqlanmoqda
+2025-05-11 13:50:50,407 - presentations.views - DEBUG - PPT fayli saqlandi
+2025-05-11 13:50:50,408 - presentations.views - DEBUG - Taqdimot muvaffaqiyatli yaratildi
+2025-05-16 21:38:32,366 - presentations.views - DEBUG - select_template view ishga tushdi
+2025-05-16 21:38:32,368 - presentations.views - DEBUG - presentation_data: {'topic': 'arterial gepotenziya', 'subject': 'ichki kasilliklar', 'list_count': 8, 'with_images': False}
+2025-05-16 21:38:36,048 - presentations.views - DEBUG - select_template view ishga tushdi
+2025-05-16 21:38:36,049 - presentations.views - DEBUG - presentation_data: {'topic': 'arterial gepotenziya', 'subject': 'ichki kasilliklar', 'list_count': 8, 'with_images': False}
+2025-05-16 21:40:38,139 - presentations.views - DEBUG - select_template view ishga tushdi
+2025-05-16 21:40:38,139 - presentations.views - DEBUG - presentation_data: {'topic': 'arterial gepotenziya', 'subject': 'ichki kasilliklar', 'list_count': 15, 'with_images': False}
+2025-05-16 21:40:40,286 - presentations.views - DEBUG - select_template view ishga tushdi
+2025-05-16 21:40:40,287 - presentations.views - DEBUG - presentation_data: {'topic': 'arterial gepotenziya', 'subject': 'ichki kasilliklar', 'list_count': 15, 'with_images': False}
+2025-05-16 22:17:50,851 - presentations.views - DEBUG - select_template view ishga tushdi
+2025-05-16 22:17:50,852 - presentations.views - DEBUG - presentation_data: {'topic': 'arterial gepotenziya', 'subject': 'ichki kasilliklar', 'list_count': 8, 'with_images': False}
+2025-05-16 22:17:53,887 - presentations.views - DEBUG - select_template view ishga tushdi
+2025-05-16 22:17:53,888 - presentations.views - DEBUG - presentation_data: {'topic': 'arterial gepotenziya', 'subject': 'ichki kasilliklar', 'list_count': 8, 'with_images': False}
+2025-05-16 22:18:01,520 - presentations.views - DEBUG - select_template view ishga tushdi
+2025-05-16 22:18:01,524 - presentations.views - DEBUG - presentation_data: {'topic': 'arterial gepotenziya', 'subject': 'ichki kasilliklar', 'list_count': 8, 'with_images': False}
+2025-05-16 22:18:01,525 - presentations.views - DEBUG - POST so‘rov keldi
+2025-05-16 22:18:01,574 - presentations.views - INFO - Style index: 0, Template type: dark
+2025-05-16 22:18:01,581 - presentations.views - DEBUG - titles: ['Arterial gipotoniya: Kirish nuqtai nazari', 'Gepotenziyaning asosiy sabablari', 'Arterial gepotenziyaning klinik belgilari', 'Diagnostika usullari va zarur tekshiruvlar', "Davolash yondashuvlari: Umumiy ko'rsatmalar", "Turmush tarzi va o'zgarishlar: Arterial gepotenziyada", 'Keng tarqalgan xatolar va ularni oldini olish', 'Xulosa']
+2025-05-16 22:18:01,597 - presentations.views - DEBUG - Presentation ob'ekti yaratildi
+2025-05-16 22:18:01,675 - presentations.views - DEBUG - Slide 0 uchun matn generatsiya qilinmoqda
+2025-05-16 22:18:06,060 - presentations.views - DEBUG - Slide 0 matni: Arterial gipotoniya - bu qon bosiminig doimiy ravishda me'yordan past bo'lish holatidir. Ichki kasalliklar sohasida muhim o'rganiladigan mavzudir.
+2025-05-16 22:18:06,139 - presentations.views - DEBUG - Slide 1 uchun matn generatsiya qilinmoqda
+2025-05-16 22:18:10,052 - presentations.views - DEBUG - Slide 1 matni: Arterial gepotenziya qon bosimining doimiy pasayishi bilan xarakterlanadi. Asosiy sabablari orasida genetik moyillik, stress va noqulay ekologik sharoitlar mavjud.
+2025-05-16 22:18:10,052 - presentations.views - DEBUG - Slide 2 uchun matn generatsiya qilinmoqda
+2025-05-16 22:18:13,314 - presentations.views - DEBUG - Slide 2 matni: Arterial gepotenziya holsizlik, bosh aylanishi va ko'z oldi qorong'ilashish kabi klinik belgilarga ega. Bu holat ichki kasalliklar sohasida muhim o'rin tutadi.
+2025-05-16 22:18:13,317 - presentations.views - DEBUG - Slide 3 uchun matn generatsiya qilinmoqda
+2025-05-16 22:18:16,310 - presentations.views - DEBUG - Slide 3 matni: Arterial gepotenziyaning diagnostikasi uchun qon bosimi monitoringi va EKG kabi tekshiruvlar zarurdir. Bu usullar kasallikning darajasini aniqlashda muhim ahamiyatga ega.
+2025-05-16 22:18:16,350 - presentations.views - DEBUG - Slide 4 uchun matn generatsiya qilinmoqda
+2025-05-16 22:18:19,170 - presentations.views - DEBUG - Slide 4 matni: Arterial gepotenzion davolashda, asosiy yondashuv individual terapiya va turmush tarzini o'zgartirishdan iborat. Bu jarayon tibbiy kuzatuv ostida amalga oshiriladi.
+2025-05-16 22:18:19,186 - presentations.views - DEBUG - Slide 5 uchun matn generatsiya qilinmoqda
+2025-05-16 22:18:22,142 - presentations.views - DEBUG - Slide 5 matni: Arterial gepotenziya holatida to‘g‘ri ovqatlanish va muntazam jismoniy mashqlar muhimdir. Chekish va alkogol iste'molini cheklash tavsiya etiladi.
+2025-05-16 22:18:22,144 - presentations.views - DEBUG - Slide 6 uchun matn generatsiya qilinmoqda
+2025-05-16 22:18:26,417 - presentations.views - DEBUG - Slide 6 matni: Arterial gepotenziya holatida suyuqlik iste'moli va tuzlanish darajasini noto'g'ri boshqarish keng tarqalgan xatolar hisoblanadi. Ushbu xatolarni oldini olish uchun tibbiy ko'rsatmalar asosida harakat qilish muhimdir.
+2025-05-16 22:18:26,418 - presentations.views - DEBUG - Xulosa matni generatsiya qilinmoqda
+2025-05-16 22:18:31,095 - presentations.views - DEBUG - Xulosa matni: Arterial gepotenziya, qon bosiminig doimiy ravishda me'yordan past bo'lishi bilan xarakterlanadi, genetik moyillik, stress va ekologik omillar ta'sirida rivojlanishi mumkin. Davolash individual yondashuvni talab qiladi va turmush tarzini o'zgartirish, jumladan to‘g‘ri ovqatlanish va muntazam jismoniy mashqlarni o'z ichiga oladi.
+2025-05-16 22:18:31,096 - presentations.views - DEBUG - image_paths: [None, None, None, None, None, None, None, None]
+2025-05-16 22:18:31,098 - presentations.views - DEBUG - Shablon yaratilmoqda
+2025-05-16 22:18:31,363 - presentations.views - DEBUG - PPT fayli saqlanmoqda
+2025-05-16 22:18:31,412 - presentations.views - DEBUG - PPT fayli saqlandi
+2025-05-16 22:18:31,413 - presentations.views - DEBUG - Taqdimot muvaffaqiyatli yaratildi
+2025-06-24 08:50:59,038 - presentations.views - DEBUG - select_template view ishga tushdi
+2025-06-24 08:50:59,050 - presentations.views - DEBUG - presentation_data: {'topic': 'arterial gepertenziya davolash', 'subject': 'ichki kasilliklar', 'list_count': 8, 'with_images': False}
+2025-06-24 08:51:03,218 - presentations.views - DEBUG - select_template view ishga tushdi
+2025-06-24 08:51:03,269 - presentations.views - DEBUG - presentation_data: {'topic': 'arterial gepertenziya davolash', 'subject': 'ichki kasilliklar', 'list_count': 8, 'with_images': False}
+2025-06-24 08:51:21,925 - presentations.views - DEBUG - select_template view ishga tushdi
+2025-06-24 08:51:21,946 - presentations.views - DEBUG - presentation_data: {'topic': 'arterial gepertenziya davolash', 'subject': 'ichki kasilliklar', 'list_count': 8, 'with_images': False}
+2025-06-24 08:51:21,957 - presentations.views - DEBUG - POST so‘rov keldi
+2025-06-24 08:51:21,965 - presentations.views - INFO - Style index: 0, Template type: dark
+2025-06-24 08:51:22,000 - presentations.views - DEBUG - titles: ['Arterial Gipertenziya: Davolash Yollari', 'Kasallikning sabab va belgilari', 'Diagnostika va zarur tekshiruvlar', 'Davolash usullari: umumiy yondashuv', "Dori-darmonlar va ularning ta'siri", 'Turmush tarzi va togri ovqatlanish', 'Muolajaning samaradorligini baholash', 'Xulosa']
+2025-06-24 08:51:22,019 - presentations.views - DEBUG - Presentation ob'ekti yaratildi
+2025-06-24 08:51:22,090 - presentations.views - DEBUG - Slide 0 uchun matn generatsiya qilinmoqda
+2025-06-24 08:51:27,739 - presentations.views - DEBUG - Slide 0 matni: Arterial gipertenziya davolashda dori-darmonlar va turmush tarzi o'zgarishlari asosiydir. Keng qamrovli yondashuv talab etiladi.
+2025-06-24 08:51:27,840 - presentations.views - DEBUG - Slide 1 uchun matn generatsiya qilinmoqda
+2025-06-24 08:51:31,431 - presentations.views - DEBUG - Slide 1 matni: Arterial gepertenziya turli xil sabablarga ko'ra rivojlanadi va ko'pincha bosh aylanishi, charchash kabi belgilar bilan namoyon bo'ladi.
+2025-06-24 08:51:31,436 - presentations.views - DEBUG - Slide 2 uchun matn generatsiya qilinmoqda
+2025-06-24 08:51:37,777 - presentations.views - DEBUG - Slide 2 matni: Arterial gepertenziya diagnostikasi uchun qon bosimi monitoringi va laboratoriya sinovlari zarur. Bunday tekshiruvlar kasallik darajasini aniqlashga yordam beradi.
+2025-06-24 08:51:37,798 - presentations.views - DEBUG - Slide 3 uchun matn generatsiya qilinmoqda
+2025-06-24 08:51:42,291 - presentations.views - DEBUG - Slide 3 matni: Arterial gepertenzii davolashda dori-darmonlar va turmush tarzi o'zgarishlari muhimdir. Keng ko'lamli yondashuv talab etiladi.
+2025-06-24 08:51:42,312 - presentations.views - DEBUG - Slide 4 uchun matn generatsiya qilinmoqda
+2025-06-24 08:51:46,082 - presentations.views - DEBUG - Slide 4 matni: Arterial gepertenziya davolashda dori-darmonlar muhim rol o'ynaydi. Ular qon bosimini me'yorlashda va asoratlarning oldini olishda yordam beradi.
+2025-06-24 08:51:46,114 - presentations.views - DEBUG - Slide 5 uchun matn generatsiya qilinmoqda
+2025-06-24 08:51:49,865 - presentations.views - DEBUG - Slide 5 matni: Arterial gepertenzinya davolashda turmush tarzi va to‘g‘ri ovqatlanish muhim rol o‘ynaydi. Kam tuzli va to‘yimli dietaga rioya qilish kerak.
+2025-06-24 08:51:49,867 - presentations.views - DEBUG - Slide 6 uchun matn generatsiya qilinmoqda
+2025-06-24 08:51:53,241 - presentations.views - DEBUG - Slide 6 matni: Arterial gepertenzija davolashda muolajaning samaradorligi qon bosimi ko'rsatkichlarining normallashtirilishi bilan baholanadi.
+2025-06-24 08:51:53,249 - presentations.views - DEBUG - Xulosa matni generatsiya qilinmoqda
+2025-06-24 08:51:58,901 - presentations.views - DEBUG - Xulosa matni: Arterial gipertenziya davolashda dori-darmonlar va turmush tarzi o'zgarishlari asosiy yondashuvdir. Kasallikni diagnostika qilish va darajasini aniqlash uchun qon bosimi monitoringi va laboratoriya sinovlari zarur. Muolajaning samaradorligi qon bosimi ko'rsatkichlarining normallashtirilishi orqali baholanadi.
+2025-06-24 08:51:58,979 - presentations.views - DEBUG - image_paths: [None, None, None, None, None, None, None, None]
+2025-06-24 08:51:58,995 - presentations.views - DEBUG - Shablon yaratilmoqda
+2025-06-24 08:51:59,926 - presentations.views - DEBUG - PPT fayli saqlanmoqda
+2025-06-24 08:52:00,207 - presentations.views - DEBUG - PPT fayli saqlandi
+2025-06-24 08:52:00,223 - presentations.views - DEBUG - Taqdimot muvaffaqiyatli yaratildi
+2025-06-24 09:13:56,409 - presentations.views - DEBUG - select_template view ishga tushdi
+2025-06-24 09:13:56,417 - presentations.views - DEBUG - presentation_data: {'topic': ' it texnologiyalari', 'subject': 'texnologiyalar asoslari', 'list_count': 8, 'with_images': False}
+2025-06-24 09:13:59,581 - presentations.views - DEBUG - select_template view ishga tushdi
+2025-06-24 09:13:59,599 - presentations.views - DEBUG - presentation_data: {'topic': ' it texnologiyalari', 'subject': 'texnologiyalar asoslari', 'list_count': 8, 'with_images': False}
+2025-06-24 09:14:33,831 - presentations.views - DEBUG - select_template view ishga tushdi
+2025-06-24 09:14:33,958 - presentations.views - DEBUG - presentation_data: {'topic': ' it texnologiyalari', 'subject': 'texnologiyalar asoslari', 'list_count': 8, 'with_images': False}
+2025-06-24 09:14:33,976 - presentations.views - DEBUG - POST so‘rov keldi
+2025-06-24 09:14:34,048 - presentations.views - INFO - Style index: 16, Template type: dark
+2025-06-24 09:14:34,116 - presentations.views - DEBUG - titles: ['IT Texnologiyalariga Xush Kelibsiz', 'IT texnologiyalarining rivojlanish tarixi', "Dasturiy ta'minot asoslari: kodlash va dasturlash", "Kompyuter tarmoqlari va ma'lumotlar uzatish", "Sun'iy intellekt va robototexnika yangiliklari", 'IT sohasida xavfsizlik va himoya usullari', "Kelajak texnologiyalari: qanday yo'nalishlar ustuvor", 'Xulosa']
+2025-06-24 09:14:34,166 - presentations.views - DEBUG - Presentation ob'ekti yaratildi
+2025-06-24 09:14:34,264 - presentations.views - DEBUG - Slide 0 uchun matn generatsiya qilinmoqda
+2025-06-24 09:14:38,172 - presentations.views - DEBUG - Slide 0 matni: IT texnologiyalari - bu zamonaviy dunyomizning asosiy tayanchidir. Ular ma'lumotlar almashinuvi va ish jarayonlarini optimallashtirishda muhim rol o'ynaydi.
+2025-06-24 09:14:38,187 - presentations.views - DEBUG - Slide 1 uchun matn generatsiya qilinmoqda
+2025-06-24 09:14:44,486 - presentations.views - DEBUG - Slide 1 matni: IT texnologiyalari XX asrning o'rtalarida hisoblash texnikasining paydo bo'lishi bilan rivojlanishni boshladi. Ular bugungi kunda hayotimizning ajralmas qismiga aylanib, turli sohalarda keng qo'llanilmoqda.
+2025-06-24 09:14:44,498 - presentations.views - DEBUG - Slide 2 uchun matn generatsiya qilinmoqda
+2025-06-24 09:14:51,030 - presentations.views - DEBUG - Slide 2 matni: Dasturiy ta'minot asoslari, kodlash va dasturlash jarayonlarini o'z ichiga oladi. Bu jarayonlar kompyuter dasturlarini yaratish va ishlab chiqishni anglatadi.
+2025-06-24 09:14:51,032 - presentations.views - DEBUG - Slide 3 uchun matn generatsiya qilinmoqda
+2025-06-24 09:14:54,412 - presentations.views - DEBUG - Slide 3 matni: Kompyuter tarmoqlari ma'lumotlar uzatishning asosiy vositasi hisoblanadi. Ular turli qurilmalar o'rtasida ma'lumot almashinuvini ta'minlaydi.
+2025-06-24 09:14:54,413 - presentations.views - DEBUG - Slide 4 uchun matn generatsiya qilinmoqda
+2025-06-24 09:14:57,592 - presentations.views - DEBUG - Slide 4 matni: Sun'iy intellekt va robototexnika sohasida katta yutuqlar qayd etilmoqda. Ushbu yangiliklar kundalik hayotimizni tubdan o'zgartirmoqda.
+2025-06-24 09:14:57,640 - presentations.views - DEBUG - Slide 5 uchun matn generatsiya qilinmoqda
+2025-06-24 09:15:01,885 - presentations.views - DEBUG - Slide 5 matni: IT sohasida xavfsizlik va himoya usullari, ma'lumotlarni himoyalash va kiberhujumlardan saqlanishni o'z ichiga oladi. Bu soha doimiy rivojlanib, yangi himoya usullarini talab qiladi.
+2025-06-24 09:15:01,886 - presentations.views - DEBUG - Slide 6 uchun matn generatsiya qilinmoqda
+2025-06-24 09:15:08,341 - presentations.views - DEBUG - Slide 6 matni: Kelajak texnologiyalari orasida sun'iy intellekt, ma'lumotlar tahlili va kiberxavfsizlik ustuvor yo'nalishlardir. Bu sohalar innovatsiya va rivojlanishning asosiy omillaridir.
+2025-06-24 09:15:08,341 - presentations.views - DEBUG - Xulosa matni generatsiya qilinmoqda
+2025-06-24 09:15:14,999 - presentations.views - DEBUG - Xulosa matni: IT texnologiyalari zamonaviy dunyomizning tayanchi sifatida, turli sohalarda muhim rol o'ynaydi va ularning rivojlanishi, kodlash, dasturlash, kompyuter tarmoqlari, sun'iy intellekt va kiberxavfsizlik kabi sohalarda yangiliklar bilan davom etmoqda. Kelajakda sun'iy intellekt, ma'lumotlar tahlili va kiberxavfsizlik sohalarida katta o'sish kutilmoqda.
+2025-06-24 09:15:15,002 - presentations.views - DEBUG - image_paths: [None, None, None, None, None, None, None, None]
+2025-06-24 09:15:15,003 - presentations.views - DEBUG - Shablon yaratilmoqda
+2025-06-24 09:15:15,484 - presentations.views - DEBUG - PPT fayli saqlanmoqda
+2025-06-24 09:15:16,298 - presentations.views - DEBUG - PPT fayli saqlandi
+2025-06-24 09:15:16,324 - presentations.views - DEBUG - Taqdimot muvaffaqiyatli yaratildi
+2025-06-24 09:36:05,967 - presentations.views - DEBUG - select_template view ishga tushdi
+2025-06-24 09:36:05,988 - presentations.views - DEBUG - presentation_data: None
+2025-06-24 09:36:05,996 - presentations.views - ERROR - presentation_data topilmadi
+2025-06-24 09:36:06,329 - presentations.views - DEBUG - select_template view ishga tushdi
+2025-06-24 09:36:06,416 - presentations.views - DEBUG - presentation_data: None
+2025-06-24 09:36:06,417 - presentations.views - ERROR - presentation_data topilmadi
