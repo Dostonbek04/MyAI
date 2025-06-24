@@ -1,0 +1,2 @@
+# MyAI
+Only for me
